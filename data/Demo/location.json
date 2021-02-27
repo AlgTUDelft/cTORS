@@ -1,0 +1,245 @@
+{
+	"trackParts": [
+		{
+			"id": "14",
+			"type": "Bumper",
+			"aSide": [
+				"1"
+			],
+			"bSide": [],
+			"length": 0,
+			"name": "bumper_1",
+			"sawMovementAllowed": false,
+			"parkingAllowed": false,
+			"isElectrified": true,
+			"standingAllowed": false
+		},
+		{
+			"id": "1",
+			"type": "RailRoad",
+			"aSide": [
+			  "14"
+			],
+			"bSide": [
+			  "2"
+			],
+			"length": 600,
+			"name": "rail_1",
+			"sawMovementAllowed": true,
+			"parkingAllowed": true,
+			"isElectrified": true,
+			"standingAllowed": true
+		},
+		{
+			"id": "2",
+			"type": "EnglishSwitch",
+			"aSide": [
+			  "1",
+			  "11"
+			],
+			"bSide": [
+			  "3",
+			  "4"
+			],
+			"length": 0,
+			"name": "switch_1",
+			"sawMovementAllowed": false,
+			"parkingAllowed": false,
+			"isElectrified": true,
+			"standingAllowed": false
+		},
+		{
+			"id": "4",
+			"type": "RailRoad",
+			"aSide": [
+			  "2"
+			],
+			"bSide": [
+			  "5"
+			],
+			"length": 450,
+			"name": "rail_2",
+			"sawMovementAllowed": true,
+			"parkingAllowed": true,
+			"isElectrified": true,
+			"standingAllowed": true
+		},
+		{
+			"id": "5",
+			"type": "Bumper",
+			"aSide": [
+				"4"
+			],
+			"bSide": [],
+			"length": 0,
+			"name": "bumper_2",
+			"sawMovementAllowed": false,
+			"parkingAllowed": false,
+			"isElectrified": true,
+			"standingAllowed": false
+		},
+		{
+			"id": "3",
+			"type": "RailRoad",
+			"aSide": [
+			  "2"
+			],
+			"bSide": [
+			  "6"
+			],
+			"length": 50,
+			"name": "rail_3",
+			"sawMovementAllowed": false,
+			"parkingAllowed": false,
+			"isElectrified": true,
+			"standingAllowed": true
+		},
+		{
+			"id": "6",
+			"type": "Switch",
+			"aSide": [
+			  "3"
+			],
+			"bSide": [
+			  "7",
+			  "8"
+			],
+			"length": 0,
+			"name": "switch_2",
+			"sawMovementAllowed": false,
+			"parkingAllowed": false,
+			"isElectrified": true,
+			"standingAllowed": false
+		},
+		{
+			"id": "7",
+			"type": "RailRoad",
+			"aSide": [
+			  "6"
+			],
+			"bSide": [
+			  "9"
+			],
+			"length": 500,
+			"name": "rail_4",
+			"sawMovementAllowed": true,
+			"parkingAllowed": true,
+			"isElectrified": true,
+			"standingAllowed": true
+		},
+		{
+			"id": "8",
+			"type": "RailRoad",
+			"aSide": [
+			  "6"
+			],
+			"bSide": [
+			  "10"
+			],
+			"length": 350,
+			"name": "rail_5",
+			"sawMovementAllowed": true,
+			"parkingAllowed": true,
+			"isElectrified": true,
+			"standingAllowed": true
+		},
+		{
+			"id": "9",
+			"type": "Bumper",
+			"aSide": [
+				"7"
+			],
+			"bSide": [],
+			"length": 0,
+			"name": "bumper_3",
+			"sawMovementAllowed": false,
+			"parkingAllowed": false,
+			"isElectrified": true,
+			"standingAllowed": false
+		},
+		{
+			"id": "10",
+			"type": "Bumper",
+			"aSide": [
+				"8"
+			],
+			"bSide": [],
+			"length": 0,
+			"name": "bumper_4",
+			"sawMovementAllowed": false,
+			"parkingAllowed": false,
+			"isElectrified": true,
+			"standingAllowed": false
+		},
+		{
+			"id": "11",
+			"type": "RailRoad",
+			"aSide": [
+			  "12"
+			],
+			"bSide": [
+			  "2"
+			],
+			"length": 600,
+			"name": "rail_6",
+			"sawMovementAllowed": true,
+			"parkingAllowed": true,
+			"isElectrified": true,
+			"standingAllowed": true
+		},
+		{
+			"id": "12",
+			"type": "Bumper",
+			"aSide": [
+				"11"
+			],
+			"bSide": [],
+			"length": 0,
+			"name": "bumper_5",
+			"sawMovementAllowed": false,
+			"parkingAllowed": false,
+			"isElectrified": true,
+			"standingAllowed": false
+				
+		}
+	],
+	"facilities": [
+		{
+			"id": "13",
+			"type": "CleaningPlatform",
+			"relatedTrackParts": [
+			  "11"
+			],
+			"taskTypes": [
+			  {
+				"other": "Cleaning inside"
+			  }
+			],
+			"simultaneousUsageCount": 1,
+			"timeWindow": {
+			  "start": 0,
+			  "end": 604800
+			}
+		}
+	],
+	"taskTypes": [],
+	"movementConstant": 0,
+    "movementTrackCoefficient": 60,
+	"movementSwitchCoefficient": 30,
+	"distanceEntries": [
+		{"fromTrackPartId":"1","toTrackPartId":"1","distanceInSeconds":0},{"fromTrackPartId":"1","toTrackPartId":"2","distanceInSeconds":10},{"fromTrackPartId":"1","toTrackPartId":"3","distanceInSeconds":10},{"fromTrackPartId":"1","toTrackPartId":"4","distanceInSeconds":10},{"fromTrackPartId":"1","toTrackPartId":"5","distanceInSeconds":10},{"fromTrackPartId":"1","toTrackPartId":"6","distanceInSeconds":10},{"fromTrackPartId":"1","toTrackPartId":"7","distanceInSeconds":10},{"fromTrackPartId":"1","toTrackPartId":"8","distanceInSeconds":10},{"fromTrackPartId":"1","toTrackPartId":"9","distanceInSeconds":10},{"fromTrackPartId":"1","toTrackPartId":"10","distanceInSeconds":10},{"fromTrackPartId":"1","toTrackPartId":"11","distanceInSeconds":10},{"fromTrackPartId":"1","toTrackPartId":"12","distanceInSeconds":10},{"fromTrackPartId":"1","toTrackPartId":"13","distanceInSeconds":10},{"fromTrackPartId":"1","toTrackPartId":"14","distanceInSeconds":10},
+		{"fromTrackPartId":"2","toTrackPartId":"1","distanceInSeconds":10},{"fromTrackPartId":"2","toTrackPartId":"2","distanceInSeconds":0},{"fromTrackPartId":"2","toTrackPartId":"3","distanceInSeconds":10},{"fromTrackPartId":"2","toTrackPartId":"4","distanceInSeconds":10},{"fromTrackPartId":"2","toTrackPartId":"5","distanceInSeconds":10},{"fromTrackPartId":"2","toTrackPartId":"6","distanceInSeconds":10},{"fromTrackPartId":"2","toTrackPartId":"7","distanceInSeconds":10},{"fromTrackPartId":"2","toTrackPartId":"8","distanceInSeconds":10},{"fromTrackPartId":"2","toTrackPartId":"9","distanceInSeconds":10},{"fromTrackPartId":"2","toTrackPartId":"10","distanceInSeconds":10},{"fromTrackPartId":"2","toTrackPartId":"11","distanceInSeconds":10},{"fromTrackPartId":"2","toTrackPartId":"12","distanceInSeconds":10},{"fromTrackPartId":"2","toTrackPartId":"13","distanceInSeconds":10},{"fromTrackPartId":"2","toTrackPartId":"14","distanceInSeconds":10},
+		{"fromTrackPartId":"3","toTrackPartId":"1","distanceInSeconds":10},{"fromTrackPartId":"3","toTrackPartId":"2","distanceInSeconds":10},{"fromTrackPartId":"3","toTrackPartId":"3","distanceInSeconds":0},{"fromTrackPartId":"3","toTrackPartId":"4","distanceInSeconds":10},{"fromTrackPartId":"3","toTrackPartId":"5","distanceInSeconds":10},{"fromTrackPartId":"3","toTrackPartId":"6","distanceInSeconds":10},{"fromTrackPartId":"3","toTrackPartId":"7","distanceInSeconds":10},{"fromTrackPartId":"3","toTrackPartId":"8","distanceInSeconds":10},{"fromTrackPartId":"3","toTrackPartId":"9","distanceInSeconds":10},{"fromTrackPartId":"3","toTrackPartId":"10","distanceInSeconds":10},{"fromTrackPartId":"3","toTrackPartId":"11","distanceInSeconds":10},{"fromTrackPartId":"3","toTrackPartId":"12","distanceInSeconds":10},{"fromTrackPartId":"3","toTrackPartId":"13","distanceInSeconds":10},{"fromTrackPartId":"3","toTrackPartId":"14","distanceInSeconds":10},
+		{"fromTrackPartId":"4","toTrackPartId":"1","distanceInSeconds":10},{"fromTrackPartId":"4","toTrackPartId":"2","distanceInSeconds":10},{"fromTrackPartId":"4","toTrackPartId":"3","distanceInSeconds":10},{"fromTrackPartId":"4","toTrackPartId":"4","distanceInSeconds":0},{"fromTrackPartId":"4","toTrackPartId":"5","distanceInSeconds":10},{"fromTrackPartId":"4","toTrackPartId":"6","distanceInSeconds":10},{"fromTrackPartId":"4","toTrackPartId":"7","distanceInSeconds":10},{"fromTrackPartId":"4","toTrackPartId":"8","distanceInSeconds":10},{"fromTrackPartId":"4","toTrackPartId":"9","distanceInSeconds":10},{"fromTrackPartId":"4","toTrackPartId":"10","distanceInSeconds":10},{"fromTrackPartId":"4","toTrackPartId":"11","distanceInSeconds":10},{"fromTrackPartId":"4","toTrackPartId":"12","distanceInSeconds":10},{"fromTrackPartId":"4","toTrackPartId":"13","distanceInSeconds":10},{"fromTrackPartId":"4","toTrackPartId":"14","distanceInSeconds":10},
+		{"fromTrackPartId":"5","toTrackPartId":"1","distanceInSeconds":10},{"fromTrackPartId":"5","toTrackPartId":"2","distanceInSeconds":10},{"fromTrackPartId":"5","toTrackPartId":"3","distanceInSeconds":10},{"fromTrackPartId":"5","toTrackPartId":"4","distanceInSeconds":10},{"fromTrackPartId":"5","toTrackPartId":"5","distanceInSeconds":0},{"fromTrackPartId":"5","toTrackPartId":"6","distanceInSeconds":10},{"fromTrackPartId":"5","toTrackPartId":"7","distanceInSeconds":10},{"fromTrackPartId":"5","toTrackPartId":"8","distanceInSeconds":10},{"fromTrackPartId":"5","toTrackPartId":"9","distanceInSeconds":10},{"fromTrackPartId":"5","toTrackPartId":"10","distanceInSeconds":10},{"fromTrackPartId":"5","toTrackPartId":"11","distanceInSeconds":10},{"fromTrackPartId":"5","toTrackPartId":"12","distanceInSeconds":10},{"fromTrackPartId":"5","toTrackPartId":"13","distanceInSeconds":10},{"fromTrackPartId":"5","toTrackPartId":"14","distanceInSeconds":10},
+		{"fromTrackPartId":"6","toTrackPartId":"1","distanceInSeconds":10},{"fromTrackPartId":"6","toTrackPartId":"2","distanceInSeconds":10},{"fromTrackPartId":"6","toTrackPartId":"3","distanceInSeconds":10},{"fromTrackPartId":"6","toTrackPartId":"4","distanceInSeconds":10},{"fromTrackPartId":"6","toTrackPartId":"5","distanceInSeconds":10},{"fromTrackPartId":"6","toTrackPartId":"6","distanceInSeconds":0},{"fromTrackPartId":"6","toTrackPartId":"7","distanceInSeconds":10},{"fromTrackPartId":"6","toTrackPartId":"8","distanceInSeconds":10},{"fromTrackPartId":"6","toTrackPartId":"9","distanceInSeconds":10},{"fromTrackPartId":"6","toTrackPartId":"10","distanceInSeconds":10},{"fromTrackPartId":"6","toTrackPartId":"11","distanceInSeconds":10},{"fromTrackPartId":"6","toTrackPartId":"12","distanceInSeconds":10},{"fromTrackPartId":"6","toTrackPartId":"13","distanceInSeconds":10},{"fromTrackPartId":"6","toTrackPartId":"14","distanceInSeconds":10},
+		{"fromTrackPartId":"7","toTrackPartId":"1","distanceInSeconds":10},{"fromTrackPartId":"7","toTrackPartId":"2","distanceInSeconds":10},{"fromTrackPartId":"7","toTrackPartId":"3","distanceInSeconds":10},{"fromTrackPartId":"7","toTrackPartId":"4","distanceInSeconds":10},{"fromTrackPartId":"7","toTrackPartId":"5","distanceInSeconds":10},{"fromTrackPartId":"7","toTrackPartId":"6","distanceInSeconds":10},{"fromTrackPartId":"7","toTrackPartId":"7","distanceInSeconds":0},{"fromTrackPartId":"7","toTrackPartId":"8","distanceInSeconds":10},{"fromTrackPartId":"7","toTrackPartId":"9","distanceInSeconds":10},{"fromTrackPartId":"7","toTrackPartId":"10","distanceInSeconds":10},{"fromTrackPartId":"7","toTrackPartId":"11","distanceInSeconds":10},{"fromTrackPartId":"7","toTrackPartId":"12","distanceInSeconds":10},{"fromTrackPartId":"7","toTrackPartId":"13","distanceInSeconds":10},{"fromTrackPartId":"7","toTrackPartId":"14","distanceInSeconds":10},
+		{"fromTrackPartId":"8","toTrackPartId":"1","distanceInSeconds":10},{"fromTrackPartId":"8","toTrackPartId":"2","distanceInSeconds":10},{"fromTrackPartId":"8","toTrackPartId":"3","distanceInSeconds":10},{"fromTrackPartId":"8","toTrackPartId":"4","distanceInSeconds":10},{"fromTrackPartId":"8","toTrackPartId":"5","distanceInSeconds":10},{"fromTrackPartId":"8","toTrackPartId":"6","distanceInSeconds":10},{"fromTrackPartId":"8","toTrackPartId":"7","distanceInSeconds":10},{"fromTrackPartId":"8","toTrackPartId":"8","distanceInSeconds":0},{"fromTrackPartId":"8","toTrackPartId":"9","distanceInSeconds":10},{"fromTrackPartId":"8","toTrackPartId":"10","distanceInSeconds":10},{"fromTrackPartId":"8","toTrackPartId":"11","distanceInSeconds":10},{"fromTrackPartId":"8","toTrackPartId":"12","distanceInSeconds":10},{"fromTrackPartId":"8","toTrackPartId":"13","distanceInSeconds":10},{"fromTrackPartId":"8","toTrackPartId":"14","distanceInSeconds":10},
+		{"fromTrackPartId":"9","toTrackPartId":"1","distanceInSeconds":10},{"fromTrackPartId":"9","toTrackPartId":"2","distanceInSeconds":10},{"fromTrackPartId":"9","toTrackPartId":"3","distanceInSeconds":10},{"fromTrackPartId":"9","toTrackPartId":"4","distanceInSeconds":10},{"fromTrackPartId":"9","toTrackPartId":"5","distanceInSeconds":10},{"fromTrackPartId":"9","toTrackPartId":"6","distanceInSeconds":10},{"fromTrackPartId":"9","toTrackPartId":"7","distanceInSeconds":10},{"fromTrackPartId":"9","toTrackPartId":"8","distanceInSeconds":10},{"fromTrackPartId":"9","toTrackPartId":"9","distanceInSeconds":0},{"fromTrackPartId":"9","toTrackPartId":"10","distanceInSeconds":10},{"fromTrackPartId":"9","toTrackPartId":"11","distanceInSeconds":10},{"fromTrackPartId":"9","toTrackPartId":"12","distanceInSeconds":10},{"fromTrackPartId":"9","toTrackPartId":"13","distanceInSeconds":10},{"fromTrackPartId":"9","toTrackPartId":"14","distanceInSeconds":10},
+		{"fromTrackPartId":"10","toTrackPartId":"1","distanceInSeconds":10},{"fromTrackPartId":"10","toTrackPartId":"2","distanceInSeconds":10},{"fromTrackPartId":"10","toTrackPartId":"3","distanceInSeconds":10},{"fromTrackPartId":"10","toTrackPartId":"4","distanceInSeconds":10},{"fromTrackPartId":"10","toTrackPartId":"5","distanceInSeconds":10},{"fromTrackPartId":"10","toTrackPartId":"6","distanceInSeconds":10},{"fromTrackPartId":"10","toTrackPartId":"7","distanceInSeconds":10},{"fromTrackPartId":"10","toTrackPartId":"8","distanceInSeconds":10},{"fromTrackPartId":"10","toTrackPartId":"9","distanceInSeconds":10},{"fromTrackPartId":"10","toTrackPartId":"10","distanceInSeconds":0},{"fromTrackPartId":"10","toTrackPartId":"11","distanceInSeconds":10},{"fromTrackPartId":"10","toTrackPartId":"12","distanceInSeconds":10},{"fromTrackPartId":"10","toTrackPartId":"13","distanceInSeconds":10},{"fromTrackPartId":"10","toTrackPartId":"14","distanceInSeconds":10},
+		{"fromTrackPartId":"11","toTrackPartId":"1","distanceInSeconds":10},{"fromTrackPartId":"11","toTrackPartId":"2","distanceInSeconds":10},{"fromTrackPartId":"11","toTrackPartId":"3","distanceInSeconds":10},{"fromTrackPartId":"11","toTrackPartId":"4","distanceInSeconds":10},{"fromTrackPartId":"11","toTrackPartId":"5","distanceInSeconds":10},{"fromTrackPartId":"11","toTrackPartId":"6","distanceInSeconds":10},{"fromTrackPartId":"11","toTrackPartId":"7","distanceInSeconds":10},{"fromTrackPartId":"11","toTrackPartId":"8","distanceInSeconds":10},{"fromTrackPartId":"11","toTrackPartId":"9","distanceInSeconds":10},{"fromTrackPartId":"11","toTrackPartId":"10","distanceInSeconds":10},{"fromTrackPartId":"11","toTrackPartId":"11","distanceInSeconds":0},{"fromTrackPartId":"11","toTrackPartId":"12","distanceInSeconds":10},{"fromTrackPartId":"11","toTrackPartId":"13","distanceInSeconds":10},{"fromTrackPartId":"11","toTrackPartId":"14","distanceInSeconds":10},
+		{"fromTrackPartId":"12","toTrackPartId":"1","distanceInSeconds":10},{"fromTrackPartId":"12","toTrackPartId":"2","distanceInSeconds":10},{"fromTrackPartId":"12","toTrackPartId":"3","distanceInSeconds":10},{"fromTrackPartId":"12","toTrackPartId":"4","distanceInSeconds":10},{"fromTrackPartId":"12","toTrackPartId":"5","distanceInSeconds":10},{"fromTrackPartId":"12","toTrackPartId":"6","distanceInSeconds":10},{"fromTrackPartId":"12","toTrackPartId":"7","distanceInSeconds":10},{"fromTrackPartId":"12","toTrackPartId":"8","distanceInSeconds":10},{"fromTrackPartId":"12","toTrackPartId":"9","distanceInSeconds":10},{"fromTrackPartId":"12","toTrackPartId":"10","distanceInSeconds":10},{"fromTrackPartId":"12","toTrackPartId":"11","distanceInSeconds":10},{"fromTrackPartId":"12","toTrackPartId":"12","distanceInSeconds":0},{"fromTrackPartId":"12","toTrackPartId":"13","distanceInSeconds":10},{"fromTrackPartId":"12","toTrackPartId":"14","distanceInSeconds":10},
+		{"fromTrackPartId":"13","toTrackPartId":"1","distanceInSeconds":10},{"fromTrackPartId":"13","toTrackPartId":"2","distanceInSeconds":10},{"fromTrackPartId":"13","toTrackPartId":"3","distanceInSeconds":10},{"fromTrackPartId":"13","toTrackPartId":"4","distanceInSeconds":10},{"fromTrackPartId":"13","toTrackPartId":"5","distanceInSeconds":10},{"fromTrackPartId":"13","toTrackPartId":"6","distanceInSeconds":10},{"fromTrackPartId":"13","toTrackPartId":"7","distanceInSeconds":10},{"fromTrackPartId":"13","toTrackPartId":"8","distanceInSeconds":10},{"fromTrackPartId":"13","toTrackPartId":"9","distanceInSeconds":10},{"fromTrackPartId":"13","toTrackPartId":"10","distanceInSeconds":10},{"fromTrackPartId":"13","toTrackPartId":"11","distanceInSeconds":10},{"fromTrackPartId":"13","toTrackPartId":"12","distanceInSeconds":10},{"fromTrackPartId":"13","toTrackPartId":"13","distanceInSeconds":0},{"fromTrackPartId":"13","toTrackPartId":"14","distanceInSeconds":10},
+		{"fromTrackPartId":"14","toTrackPartId":"1","distanceInSeconds":10},{"fromTrackPartId":"14","toTrackPartId":"2","distanceInSeconds":10},{"fromTrackPartId":"14","toTrackPartId":"3","distanceInSeconds":10},{"fromTrackPartId":"14","toTrackPartId":"4","distanceInSeconds":10},{"fromTrackPartId":"14","toTrackPartId":"5","distanceInSeconds":10},{"fromTrackPartId":"14","toTrackPartId":"6","distanceInSeconds":10},{"fromTrackPartId":"14","toTrackPartId":"7","distanceInSeconds":10},{"fromTrackPartId":"14","toTrackPartId":"8","distanceInSeconds":10},{"fromTrackPartId":"14","toTrackPartId":"9","distanceInSeconds":10},{"fromTrackPartId":"14","toTrackPartId":"10","distanceInSeconds":10},{"fromTrackPartId":"14","toTrackPartId":"11","distanceInSeconds":10},{"fromTrackPartId":"14","toTrackPartId":"12","distanceInSeconds":10},{"fromTrackPartId":"14","toTrackPartId":"13","distanceInSeconds":10},{"fromTrackPartId":"14","toTrackPartId":"14","distanceInSeconds":0}
+	]
+}

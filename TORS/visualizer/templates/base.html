@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>TORS-VIS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600|Open+Sans"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js"></script>
+    <script src="{{ url_for('static', filename='actions.js') }}"></script>
+    <script src="{{ url_for('static', filename='state.js') }}"></script>
+</head>
+<body>
+<div class="wrapper">
+    <div class="header">
+        <h1>TORS Visualizer</h1>
+    </div>
+    <div class="location">
+        <svg id="layout" width="800" height="370"></svg>
+    </div>
+    <div class="section">
+    	<button id="time-table-button" type="button" class="collapsible">Time table</button>
+		<div class="content time-table-list">
+  			<table id="time-table"></table>
+		</div>
+    </div>
+    <div class="section">
+        <div class="state">
+            <h2>State info:</h2>
+            <div class="state-info">
+                <p><b>Time:</b><br>
+                    <span id="current-time">0</span>
+                </p>
+                <p><b>Next event:</b><br>
+                    <span id="next-event">Nothing</span>
+                </p>
+                <p><b>Shunting units:</b><br>
+                    <span id="shunting-units"></span>
+                </p>
+            </div>
+        </div>
+        <div class="actions">
+            <h2>Actions:</h2>
+            <div class="actions-list">
+                <table id="action-table"></table>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

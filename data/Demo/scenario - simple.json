@@ -1,0 +1,134 @@
+{
+	"nonServiceTraffic": [],
+	"disabledTrackPart": [],
+	"workers": [
+		{
+			"id": "77",
+			"type": "Schoonmakers",
+			"skills": [
+			  "Binnenkant reiniging",
+			  "Kop reiniging",
+			  "Zeep reiniging zijkant",
+			  "Oxaal reiniging zijkant",
+			  "Zeep reiniging",
+			  "Oxaal reiniging"
+			],
+			"shifts": [
+			  {
+				"start": 0,
+				"end": 115200
+			  }
+			],
+			"breakWindows": [],
+			"breakDuration": 0,
+			"startLocationId": "11",
+			"endLocationId": "11",
+			"canMoveTrains": false,
+			"name": "Adam"
+		},
+		{
+			"id": "101",
+			"type": "Machinisten",
+			"skills": [
+				"Rangeren"
+			],
+			"shifts": [
+			  {
+				"start": 0,
+				"end": 115200
+			  }
+			],
+			"breakWindows": [],
+			"breakDuration": 0,
+			"startLocationId": "1",
+			"endLocationId": "1",
+			"canMoveTrains": true,
+			"name": "Bob"
+		},
+		{
+			"id": "102",
+			"type": "Machinisten",
+			"skills": [
+				"Rangeren"
+			],
+			"shifts": [
+			  {
+				"start": 40,
+				"end": 2000
+			  }
+			],
+			"breakWindows": [],
+			"breakDuration": 0,
+			"startLocationId": "1",
+			"endLocationId": "1",
+			"canMoveTrains": true,
+			"name": "Charles"
+		}
+	],
+	"in": [
+		{
+			"time": "30",
+			"id": "11111",
+			"sideTrackPart": "14",
+			"parkingTrackPart": "1",
+			"members": [
+				{
+					"id": "2422",
+					"typeDisplayName": "SLT4",
+					"tasks": []
+				}
+			]
+		}
+	],
+	"out": [
+		{
+		  "time": "878",
+		  "id": "11111",
+		  "sideTrackPart": "14",
+		  "parkingTrackPart": "1",
+		  "members": [
+			{
+			  "id": "****",
+			  "typeDisplayName": "SLT4",
+			  "tasks": []
+			}
+		  ]
+		}
+	],
+	"startTime": "0",
+	"endTime": "1500",
+	"inStanding": [],
+	"outStanding": [],
+	"trainUnitTypes": [
+		{
+		  "displayName": "SLT4",
+		  "carriages": 4,
+		  "length": 70,
+		  "combineDuration": "180",
+		  "splitDuration": "120",
+		  "backNormTime": "120",
+		  "backAdditionTime": "16",
+		  "travelSpeed": "0",
+		  "startUpTime": "0",
+		  "typePrefix": "SLT",
+		  "needsLoco": false,
+		  "isLoco": false,
+		  "needsElectricity": true
+		},
+				{
+		  "displayName": "SNG3",
+		  "carriages": 3,
+		  "length": 35,
+		  "combineDuration": "180",
+		  "splitDuration": "120",
+		  "backNormTime": "120",
+		  "backAdditionTime": "16",
+		  "travelSpeed": "0",
+		  "startUpTime": "0",
+		  "typePrefix": "SNG",
+		  "needsLoco": false,
+		  "isLoco": false,
+		  "needsElectricity": true
+		}
+	]
+}

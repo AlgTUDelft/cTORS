@@ -1,0 +1,358 @@
+{
+    "business_rules": {
+        "categories": {
+            "ArrivalAndDeparture": true,
+            "CombineAndSplit": true,
+            "Employees": true,
+            "Facility": true,
+            "Matching": true,
+            "Parking": true,
+            "Service": true,
+            "Shunting": true,
+            "TrackOccupation": true
+        },
+        "rules": {
+            "end_correct_order_on_track_rule": {
+                "on": true,
+                "soft": false,
+                "category": "ArrivalAndDeparture",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "in_correct_time_rule": {
+                "on": true,
+                "soft": false,
+                "category": "ArrivalAndDeparture",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "out_correct_order_rule": {
+                "on": true,
+                "soft": false,
+                "category": "ArrivalAndDeparture",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "out_correct_time_rule": {
+                "on": true,
+                "soft": false,
+                "category": "ArrivalAndDeparture",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "out_correct_track_rule": {
+                "on": true,
+                "soft": false,
+                "category": "ArrivalAndDeparture",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "order_preserve_rule": {
+                "on": true,
+                "soft": false,
+                "category": "CombineAndSplit",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "park_combine_split_rule": {
+                "on": true,
+                "soft": false,
+                "category": "CombineAndSplit",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "setback_combine_split_rule": {
+                "on": true,
+                "soft": false,
+                "category": "CombineAndSplit",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "break_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Employees",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "no_overtime_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Employees",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "skill_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Employees",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "task_single_shift_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Employees",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "task_too_early_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Employees",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "task_too_late_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Employees",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "walking_time_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Employees",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "available_facility_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Facility",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "capacity_facility_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Facility",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "disabled_facility_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Facility",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "matching_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Matching",
+                "parameters": {
+                    "check_id": true,
+                    "check_type": true,
+                    "allow_incomplete": true
+                },
+                "priority": 1,
+                "status": "OK"
+            },
+            "electric_track_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Parking",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "legal_on_parking_track_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Parking",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "legal_on_setback_track_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Parking",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "correct_facility_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Service",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "mandatory_service_task_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Service",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "optional_service_task_rule": {
+                "on": true,
+                "soft": true,
+                "category": "Service",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "understaffed_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Service",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "electric_move_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Shunting",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "setback_once_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Shunting",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "setback_track_rule": {
+                "on": true,
+                "soft": false,
+                "category": "Shunting",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "blocked_first_track_rule": {
+                "on": true,
+                "soft": false,
+                "category": "TrackOccupation",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "blocked_track_rule": {
+                "on": true,
+                "soft": false,
+                "category": "TrackOccupation",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "disabled_track_rule": {
+                "on": true,
+                "soft": false,
+                "category": "TrackOccupation",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "length_track_rule": {
+                "on": true,
+                "soft": false,
+                "category": "TrackOccupation",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            },
+            "single_move_track_rule": {
+                "on": true,
+                "soft": false,
+                "category": "TrackOccupation",
+                "parameters": {},
+                "priority": 1,
+                "status": "OK"
+            }
+        }
+    },
+    "actions": {
+        "arrive": {
+            "parameters": {},
+            "on": true,
+            "status": "OK"
+        },
+        "combine": {
+            "parameters": {},
+            "on": true,
+            "status": "OK"
+        },
+        "exit": {
+            "parameters": {},
+            "on": true,
+            "status": "OK"
+        },
+        "move": {
+            "parameters": {
+                "no_routing_duration": 100,
+                "default_time": true,
+                "norm_time": true,
+                "walk_time": true,
+                "constant_time": 0
+            },
+            "on": true,
+            "status": "OK"
+        },
+        "service": {
+            "parameters": {},
+            "on": true,
+            "status": "OK"
+        },
+        "set_back": {
+            "parameters": {
+                "default_time": true,
+                "norm_time": true,
+                "walk_time": true,
+                "constant_time": 0
+            },
+            "on": true,
+            "status": "OK"
+        },
+        "split": {
+            "parameters": {},
+            "on": true,
+            "status": "OK"
+        },
+        "wait": {
+            "parameters": {},
+            "on": true,
+            "status": "OK"
+        },
+        "wait_all": {
+            "parameters": {},
+            "on": true,
+            "status": "OK"
+        }
+    },
+    "actions_config_namespace": "tors.core.action.actions",
+    "br_config_namespace": "tors.core.business_rule.business_rules",
+    "employees": true,
+    "verbose": false,
+    "br_break_on_fail": false,
+    "routing": true,
+    "distance_matrix_default": null
+}

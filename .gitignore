@@ -1,0 +1,25 @@
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+build
+bin
+dist
+*.egg-info
+*.pyc
+TORS/log_tensorboard
+TORS/ppo_tors.zip
+
+#visual studio code
+launch.json
+settings.json
+!data
+data/*
+!data/Demo
