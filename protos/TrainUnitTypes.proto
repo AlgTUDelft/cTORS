@@ -1,0 +1,54 @@
+﻿syntax = "proto3";
+
+package proto_tors;
+
+// TrainUnitType is a type of train unit
+message TrainUnitType {
+    // Name of the train unit type
+    // For example, "SGM" or "SLT".
+	// Currently, this is "SLT4" or "SLT6", see 'typeprefix' later on. #warning
+    string displayName = 1;
+
+    // Number of carriages. This is the total number of carriages,
+    // including the first and last carriage.
+    uint32 carriages = 2;
+
+    // Length of this train unit, in meters
+    double length = 4;
+
+    // Time it takes to perform a combine in seconds
+    uint64 combineDuration = 5;
+
+    // Time it takes to perform a split in seconds
+    uint64 splitDuration = 6;
+
+    // kopmaaktijd = backNormTime + #carriage * backAdditionTime
+    uint64 backNormTime = 7;
+    uint64 backAdditionTime = 8;
+
+	// this is the speed of the train but that is yet to be determinded wether that is here or location specific #warning
+	uint64 travelSpeed = 9;
+
+	// Startup + Shutdown
+	uint64 startUpTime = 10;
+
+	// for example: "SLT" or "VIRM"
+	string typePrefix = 11;
+
+	// This TrainUnitType needs a locomotive, e.g. it cannot drive itself
+	bool needsLoco = 12;
+
+	// Can pull/push other wagons
+	bool isLoco = 13;
+
+	// This train needs electricity, so it can only drive on electrified trackparts
+	bool needsElectricity = 14;
+
+    // Prefix of train IDs of this type (i.e., the last two digits are removed)
+    // For example, for SLT4 this is 24
+    int32 idPrefix = 15;
+}
+
+message TrainUnitTypes {
+    repeated TrainUnitType types = 1;
+}

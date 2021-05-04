@@ -3,7 +3,7 @@
 
 int main()
 {
-	Engine engine("data/Demo");
+	LocationEngine engine("data/Demo");
 	engine.CalcShortestPaths();
 	State* state = engine.StartSession();
 	cout << "\nBeginning of session\n";
@@ -35,6 +35,8 @@ int main()
 			break;
 		}
 	}
+	PBRun pb_run;
+	engine.GetResult(state)->Serialize(engine, &pb_run);
 	engine.EndSession(state);
 	cout << "End of session\n";
 	string out;

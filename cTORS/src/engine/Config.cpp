@@ -10,8 +10,8 @@ Config::Config(string folderName) {
 			throw InvalidConfigException("The specified file '" + folderName + "' does not exist");
 		json j;
 		fileInput >> j;
-		importBusinessRules(j["business_rules"]);
-		importActionRules(j["actions"]);
+		ImportBusinessRules(j["business_rules"]);
+		ImportActionRules(j["actions"]);
 	}
 	catch (exception& e) {
 		cout << "Error in loading config: " << e.what() << "\n";
@@ -19,7 +19,7 @@ Config::Config(string folderName) {
 	}
 }
 
-void Config::importBusinessRules(const json& j) {
+void Config::ImportBusinessRules(const json& j) {
 	for (auto& jit : j["rules"].items()) {
 		auto& name = jit.key();
 		auto& value = jit.value();
@@ -27,7 +27,7 @@ void Config::importBusinessRules(const json& j) {
 	}
 }
 
-void Config::importActionRules(const json& j) {
+void Config::ImportActionRules(const json& j) {
 	for (auto& jit : j.items()) {
 		auto& name = jit.key();
 		auto& value = jit.value();

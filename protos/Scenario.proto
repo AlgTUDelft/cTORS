@@ -1,0 +1,171 @@
+﻿// This program has been developed by students from the bachelor Computer Science at Utrecht University within the Software and Game project course 2016 semester 2 & 2017 semester 2
+// ©Copyright Utrecht University (Department of Information and Computing Sciences)
+
+
+syntax = "proto3";
+
+package proto_tors;
+
+import "Location.proto";
+import "TrainUnitTypes.proto";
+import "Utilities.proto";
+
+// A Scenario contains the part of the problem specification which varies daily,
+// that is the trains which come in and go out of the shunting area.
+message Scenario {
+    repeated Train in = 6;
+    repeated Train inStanding = 10;
+    repeated Train out = 7;
+    repeated Train outStanding = 11;
+    repeated NonServiceTraffic nonServiceTraffic = 3;
+    repeated DisabledTrackPart disabledTrackPart = 4;
+    repeated MemberOfStaff workers = 5;
+
+    uint64 startTime = 8;
+    uint64 endTime = 9;
+
+    repeated TrainUnitType trainUnitTypes = 12;
+}
+
+
+// An incoming/leaving train or a train which stays on the location
+// If at the beginning or the end multiple trains are on the same track,
+// The order of the list specifies the order on the Track from A to B
+message Train {
+    // The TrackPart ID of the location this train arrives over.
+    uint64 sideTrackPart = 6;
+
+    // The TrackPart ID of the location this train is at after arriving.
+    uint64 parkingTrackPart = 7;
+
+    // Arrival on the track, and departure from the track
+    // Times are in seconds since the epoch.
+    // If time is 0, train is already on the location or stays on the location
+    uint64 time = 2;
+    
+    // The unique identifier of the Train 
+    string id = 3;
+
+    // The train units in the train
+    repeated TrainUnit members = 8;
+
+    // For outstanding trains: set to true to allow departures from any track, instead of just the parkingTrackPart
+    bool canDepartFromAnyTrack = 9;
+
+    // The index of the train unit when in- or outstanding, with lower indices 
+    // at the A-side of the track
+    double standingIndex = 10;
+}
+
+message NonServiceTraffic
+{
+    // The reserved part of the location send in trackparts.
+    repeated uint64 members = 1;
+    
+    // Arrival on the track, and departure from the track
+    // Times are in seconds since the epoch
+    uint64 arrival = 2;
+    uint64 departure = 3;
+    string id = 4;
+}
+
+// An incoming magic train
+message DisabledTrackPart
+{
+    // The TrackPart ID of the location this train fetches wizards from, using 9.75 as default doesn't work.
+    uint64 trackPart = 1;
+
+    // Arrival on the track, and departure from the track
+    // Times are in seconds since the epoch
+    uint64 arrival = 2;
+    uint64 departure = 3;
+}
+
+// TrainUnit represents a combination of carriages which can move independently.
+message TrainUnit {
+    // A unique identifier of the unit
+    string id = 1;
+
+    // The displayName of the TrainUnitType
+    string typeDisplayName = 2;
+
+    // Tasks for this train unit
+    repeated TaskSpec tasks = 3;
+}
+
+// A ShuntingUnit is a combination of TrainUnits,
+// and moves as a unit at some point in time.
+message ShuntingUnit {
+    // Unique ID of this ShuntingUnit
+    string id = 1;
+
+    // The IDs of the TrainUnits contained in this ShuntingUnit
+    repeated string members = 2;
+
+    // The parents of a current ShuntingUnit, 
+    // that is, the shuntingunits which have been merged into this one,
+    // or the shuntingunit that has been split into (among others) this one.
+    repeated string parentIDs = 3;
+
+    // The children of the current ShuntingUnit,
+    // that is, the shuntingunits which contain parts of this shuntingunit.
+    // Alternatively, ShuntingUnit S has parent P iff P has child S.
+    repeated string childIDs = 4;
+}
+
+// A task specification specifies a certain task.
+message TaskSpec {
+    // The type of the task
+    TaskType type = 1;
+
+    // The priority; lower values indicate that this task is more important, a value of zero indicates that
+    // the task is required.
+    uint32 priority = 2;
+
+    // Time this task takes, in seconds
+    uint64 duration = 3;
+
+    // The skills required to perform the task. Each entry in the list indicates that a member of staff
+    // with the given skill is required.
+    // Examples:
+    // [] => no personnel required
+    // ["B-controle"] => one member of staff with skill "B-controle" required
+    // ["B-controle", "B-controle"] => two members of staff with skill "B-controle" required
+    repeated string requiredSkills = 4;
+}
+
+// A member of staff is a human that is able to perform various tasks at the facility.
+message MemberOfStaff {
+    // A unique ID which is referenced by other messages
+    uint64 id = 1;
+
+    // The type of staff, e.g. engineer, cleaning team, etc.e
+    string type = 2;
+
+    // The skills the member of staff possesses.
+    repeated string skills = 3;
+
+    // The time intervals during which the member of staff is present
+    repeated TimeInterval shifts = 4;
+
+    // The time intervals in which breaks must take place.
+    repeated TimeInterval breakWindows = 5;
+
+    // The duration of the break in seconds.
+    double breakDuration = 6;
+
+    // The location (trackpart) of the member of staff at the start of the shift
+    uint64 startLocationId = 7;
+
+    // The location (trackpart) of the member of staff at the end of the shift
+    uint64 endLocationId = 8;
+
+    // Indicates whether the member of staff can move trains
+    bool canMoveTrains = 9;
+
+    // The name of the staff member
+    string name = 10;
+    
+    // The location (trackpart) of the member of staff during breaks
+    uint64 breakLocationId = 11;
+}

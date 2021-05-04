@@ -9,6 +9,9 @@ The basic project setup uses the structure provided by cmake. The subfolders are
 * TORS: The challenge environment, in python
 
 ## Installation
+The following section explains how to compile this source code. Alternatively one can run the code in a docker container.
+The Dockerfile also shows how this project can be compiled and run step-by-step.
+### Install Cmake and Python development libraries
 To compile cTORS, cmake 3.11 (or higher) is required and the python development libraries:
 ```
 apt-get install cmake
@@ -18,6 +21,11 @@ apt-get install python3-dev
 For windows:
  * download and install cmake: https://cmake.org/download/
  * python header files already installed with python, see the include folder in your python folder.
+
+### Install Google Protocol Buffers
+This project uses Google Protocol Buffers to read the data files. Installation is required to compile the C++ source:
+ * Download the source from the [github page](https://github.com/protocolbuffers/protobuf) (version 3.15.6 is used)
+ * Follow the [instructions](https://github.com/protocolbuffers/protobuf/blob/master/src/README.md) to install
 
 ### Build with setuptools
 You can build cTORS and the pyTORS library with the following command.
@@ -148,13 +156,13 @@ ctest
 ```
 
 ## Contributors
-Mathijs M. de Weerdt: Conceptualization, Supervision, Project administration, Funding acquisition, Writing - review & editing\
-Bob Huisman: Conceptualization\
-Koos van der Linden: Software, Writing - Original draft\
-Jesse Mulderij: Writing - Original draft\
-Marjan van den Akker: Supervision of the bachelor team\
-Han Hoogeveen: Supervision of the bachelor team\
-Joris den Ouden: Conceptualization, Supervision of the bachelor team\
-Demian de Ruijter: Conceptualization, Supervision of the bachelor team\
-Bachelor-team, consisting of Dennis Arets, Sjoerd Crooijmans, Richard Dirven, Luuk Glorie, Jonathan den Herder, Jens Heuseveldt, Thijs van der Horst, Hanno Ottens, Loriana Pascual, Marco van de Weerthof, Kasper Zwijsen: Software, Visualization
+* Mathijs M. de Weerdt: Conceptualization, Supervision, Project administration, Funding acquisition, Writing - review & editing
+* Bob Huisman: Conceptualization
+* Koos van der Linden: Software, Writing - Original draft
+* Jesse Mulderij: Writing - Original draft
+* Marjan van den Akker: Supervision of the bachelor team
+* Han Hoogeveen: Supervision of the bachelor team
+* Joris den Ouden: Conceptualization, Supervision of the bachelor team
+* Demian de Ruijter: Conceptualization, Supervision of the bachelor team
+* Bachelor-team, consisting of Dennis Arets, Sjoerd Crooijmans, Richard Dirven, Luuk Glorie, Jonathan den Herder, Jens Heuseveldt, Thijs van der Horst, Hanno Ottens, Loriana Pascual, Marco van de Weerthof, Kasper Zwijsen: Software, Visualization
 

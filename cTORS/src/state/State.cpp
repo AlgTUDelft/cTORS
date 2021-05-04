@@ -4,9 +4,12 @@ State::State(const Scenario& scenario, const vector<Track*>& tracks) {
 	time = scenario.GetStartTime();
 	startTime = scenario.GetStartTime();
 	endTime = scenario.GetEndTime();
-	incomingTrains = scenario.GetIncomingTrains();
-	outgoingTrains = scenario.GetOutgoingTrains();
-	employees = scenario.GetEmployees();
+	for(auto inc: scenario.GetIncomingTrains())
+		incomingTrains.push_back(new Incoming(*inc));
+	for(auto out: scenario.GetOutgoingTrains())
+		outgoingTrains.push_back(new Outgoing(*out));
+	for(auto e: scenario.GetEmployees())
+		employees.push_back(new Employee(*e));
 	for (auto in : incomingTrains)
 		AddEvent(in);
 	for (auto out : outgoingTrains)
@@ -16,7 +19,11 @@ State::State(const Scenario& scenario, const vector<Track*>& tracks) {
 }
 
 State::~State() {
+	debug_out("Deleting state");
 	DELETE_VECTOR(shuntingUnits);
+	DELETE_VECTOR(incomingTrains);
+	DELETE_VECTOR(outgoingTrains);
+	DELETE_VECTOR(employees);
 }
 
 void State::SetTime(int time) {
@@ -75,8 +82,12 @@ const ShuntingUnit* State::AddShuntingUnitToState(const ShuntingUnit* su, const 
 	auto shuntingUnit = new ShuntingUnit(*su);
 	shuntingUnits.push_back(shuntingUnit);
 	auto& trains = shuntingUnit->GetTrains();
-	shuntingUnitStates.emplace(shuntingUnit, ShuntingUnitState(track, previous, trains.front() == frontTrain ? trains.front() : trains.back()));
-	for(auto train: shuntingUnit->GetTrains()) trainStates[train];
+	shuntingUnitStates.emplace(shuntingUnit, ShuntingUnitState(track, previous, trains.front() == *frontTrain ? &trains.front() : &trains.back()));
+	for(auto& train: trains) {
+		trainStates[&train];
+		trainIDToShuntingUnit[train.GetID()] = shuntingUnit;
+		trainIDToTrain[train.GetID()] = &train;
+	}
 	return shuntingUnit;
 }
 
@@ -146,13 +157,13 @@ void State::FreeTracks(const list<const Track*>& tracks) {
 }
 
 void State::RemoveIncoming(const Incoming* incoming) {
-	auto it = find(incomingTrains.begin(), incomingTrains.end(), incoming);
+	auto it = find_if(incomingTrains.begin(), incomingTrains.end(), [incoming](const Incoming* inc) -> bool { return *inc == *incoming; });
 	if(it != incomingTrains.end())
 		incomingTrains.erase(it);
 }
 
 void State::RemoveOutgoing(const Outgoing* outgoing) {
-	auto it = find(outgoingTrains.begin(), outgoingTrains.end(), outgoing);
+	auto it = find_if(outgoingTrains.begin(), outgoingTrains.end(), [outgoing](const Outgoing* out) -> bool { return *out == *outgoing; });
 	if (it != outgoingTrains.end())
 		outgoingTrains.erase(it);
 }
@@ -160,7 +171,11 @@ void State::RemoveOutgoing(const Outgoing* outgoing) {
 void State::RemoveShuntingUnit(const ShuntingUnit* su) {
 	RemoveOccupation(su);
 	shuntingUnitStates.erase(su);
-	for(auto train: su->GetTrains()) trainStates.erase(train);
+	for(auto& train: su->GetTrains()) {
+		trainIDToShuntingUnit.erase(train.GetID());
+		trainIDToTrain.erase(train.GetID());
+		trainStates.erase(&train);
+	}
 	auto it = find_if(shuntingUnits.begin(), shuntingUnits.end(), [su](const ShuntingUnit* s) -> bool { return *su == *s; });
 	if (it != shuntingUnits.end()) {
 		delete *it;
@@ -169,8 +184,16 @@ void State::RemoveShuntingUnit(const ShuntingUnit* su) {
 }
 
 bool State::HasShuntingUnit(const ShuntingUnit* su) const {
-	auto it = find_if(shuntingUnits.begin(), shuntingUnits.end(), [su](const ShuntingUnit* s) -> bool { return *su == *s; });
-	return (it != shuntingUnits.end());
+	auto it2 = find_if(shuntingUnits.begin(), shuntingUnits.end(), [su](const ShuntingUnit* s) -> bool { return *su == *s; });
+	return (it2 != shuntingUnits.end());
+}
+
+const ShuntingUnit* State::GetMatchingShuntingUnit(const ShuntingUnit* su) const {
+	auto it = shuntingUnitStates.find(su);
+	if(it != shuntingUnitStates.end()) return it->first;
+	auto it2 = find_if(shuntingUnits.begin(), shuntingUnits.end(), [su](const ShuntingUnit* s) -> bool { return su->MatchesShuntingUnit(s); });
+	if(it2 != shuntingUnits.end()) return *it2;
+	throw runtime_error("Shunting unit " + su->toString() + " not found.");
 }
 
 bool State::IsActive() const {
@@ -196,7 +219,7 @@ void State::RemoveActiveAction(const ShuntingUnit* su, const Action* action) {
 	}
 }
 
-void State::addTasksToTrains(const unordered_map<const Train*, vector<Task>, TrainHash, TrainEquals>& tasks) {
+void State::AddTasksToTrains(const unordered_map<const Train*, vector<Task>, TrainHash, TrainEquals>& tasks) {
 	for (auto& it : tasks) {
 		for (auto& task : it.second) {
 			AddTaskToTrain(it.first, task);
@@ -240,18 +263,46 @@ bool State::CanMoveToSide(const ShuntingUnit* su, const Track* side) const {
 	return sus.back() == su;
 }
 
-const vector<const Train*> State::GetTrainUnitsInOrder(const ShuntingUnit* su) const {
-	auto trains = su->GetTrains();
+const vector<Train> State::GetTrainUnitsInOrder(const ShuntingUnit* su) const {
+	auto& trains = su->GetTrains();
 	auto suState = GetShuntingUnitState(su);
-	bool frontFirst = suState.frontTrain == trains.front();
+	bool frontFirst = *suState.frontTrain == trains.front();
 	if ((suState.previous == nullptr || suState.position->IsASide(suState.previous)) && frontFirst)
 		return trains;
-	vector<const Train*>reverse (trains.rbegin(), trains.rend());
+	vector<Train>reverse (trains.rbegin(), trains.rend());
 	return reverse;
 }
 
 void State::SwitchFrontTrain(const ShuntingUnit* su) {
-	auto front = su->GetTrains().front();
-	auto back = su->GetTrains().back();
+	auto front = &su->GetTrains().front();
+	auto back = &su->GetTrains().back();
 	SetFrontTrain(su, GetFrontTrain(su) == front ? back : front);
+}
+
+const ShuntingUnit* State::GetShuntingUnitByTrainIDs(const vector<int>& ids) const {
+	#if(DEBUG)
+	//Check that all train ids refer to the same shunting unit
+	assert(ids.size() > 0);
+	const ShuntingUnit* su = nullptr;
+	for(int id: ids) {
+		auto current = GetShuntingUnitByTrainID(id); 
+		assert(su == nullptr || su == current);
+		su = current;
+	}
+	#endif
+	return GetShuntingUnitByTrainID(ids.at(0));
+}
+
+const Incoming* State::GetIncomingByID(int id) const {
+	auto it = find_if(incomingTrains.begin(), incomingTrains.end(),
+		[id](const Incoming* inc) -> bool { return inc->GetID() == id;});
+	if(it==incomingTrains.end()) return nullptr;
+	return *it;
+}
+
+const Outgoing* State::GetOutgoingByID(int id) const {
+	auto it = find_if(outgoingTrains.begin(), outgoingTrains.end(),
+		[id](const Outgoing* out) -> bool { return out->GetID() == id;});
+	if(it==outgoingTrains.end()) return nullptr;
+	return *it;
 }

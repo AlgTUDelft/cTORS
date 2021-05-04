@@ -98,11 +98,11 @@ class Simulator:
     
 def _has_matching_shunting_unit(o_su, sus):
         for s_su in sus:
-            if len(o_su.train_units) != len(s_su.train_units): continue
+            if len(o_su.trains) != len(s_su.trains): continue
             match = True
-            for i in range(len(o_su.train_units)):
-                o_tu = o_su.train_units[i]
-                s_tu = s_su.train_units[i]
+            for i in range(len(o_su.trains)):
+                o_tu = o_su.trains[i]
+                s_tu = s_su.trains[i]
                 if (o_tu.id is None and o_tu.type != s_tu.type) or \
                     (not o_tu.id is None and o_tu.id != s_tu.id):
                     match = False

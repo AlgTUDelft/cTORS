@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package proto_tors;
+
+import "Scenario.proto";
+import "PartialOrderSchedule.proto";
+
+message Run {
+	string location = 1;
+	Scenario scenario = 2;
+	PartialOrderSchedule plan = 3;
+	bool feasible = 4;
+	string result = 5;
+}

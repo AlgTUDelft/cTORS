@@ -98,7 +98,7 @@ class TORSConverter(ITORSConvertor):
             out_su = outgoing.shunting_unit
             for su in state.shunting_units:
                 if out_su.matches_shunting_unit(su) and state.get_position(su) == outgoing.parking_track:
-                    return Exit(outgoing, su)
+                    return Exit(su, outgoing)
         action -= self.n_out
         su_ix = action // self.n_actions
         if su_ix >= len(state.shunting_units):
@@ -111,7 +111,7 @@ class TORSConverter(ITORSConvertor):
         elif action_ix == 3: return Setback(su)
         elif action_ix == 4:
             facility = state.get_position(su).facilities[0]
-            for tu in su.train_units:
+            for tu in su.trains:
                 tasks = state.get_tasks_for_train(tu)
                 if len(tasks) == 0: continue
                 return Service(su, tasks[0], tu, facility)
@@ -146,14 +146,14 @@ class TORSConverter(ITORSConvertor):
         return chain(
             self.convert_time(state, inc.time),
             self.convert_track_position(inc.parking_track),
-            self.convert_trains(inc.shunting_unit.train_units)
+            self.convert_trains(inc.shunting_unit.trains)
         )
 
     def convert_outgoing(self, state, out):
         return chain(
             self.convert_time(state, out.time),
             self.convert_track_position(out.parking_track),
-            self.convert_trains(out.shunting_unit.train_units)
+            self.convert_trains(out.shunting_unit.trains)
         )
     
     def convert_shunting_units(self, state):

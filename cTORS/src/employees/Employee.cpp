@@ -1,27 +1,20 @@
+#include <math.h>
 #include "Employee.h"
+using namespace std;
 
-Employee::~Employee() {
-	skills.clear();
-	shifts.clear();
-	breakWindows.clear();
+inline TimeShift ConvertPBTimeInterval(const PBTimeInterval& pb_time_interval) {
+	return {(int) round(pb_time_interval.start()), (int) round(pb_time_interval.end())};
 }
 
-void Employee::fromJSON(const json& j) {
-	j.at("id").get_to(id);
-	j.at("type").get_to(type);
-	j.at("name").get_to(name);
-	j.at("skills").get_to(skills);
-	j.at("shifts").get_to(shifts);
-	j.at("breakWindows").get_to(shifts);
-	j.at("breakDuration").get_to(breakDuration);
-	j.at("canMoveTrains").get_to(canMoveTrains);
+vector<TimeShift> ConvertPBTimeIntervals(const PBList<PBTimeInterval>& pb_time_intervals) {
+	vector<TimeShift> out(pb_time_intervals.size());
+	for(int i=0; i<pb_time_intervals.size(); i++)
+		out[i] = ConvertPBTimeInterval(pb_time_intervals[i]);
+	return out;
 }
 
-void from_json(const json& j, TimeShift& ts) {
-	j.at("start").get_to(ts.start);
-	j.at("end").get_to(ts.end);
-}
+Employee::Employee(const PBMemberOfStaff& pb_employee) : Employee(to_string(pb_employee.id()), pb_employee.name(), pb_employee.type(), 
+		vector<string>(pb_employee.skills().begin(), pb_employee.skills().end()), ConvertPBTimeIntervals(pb_employee.shifts()),
+		ConvertPBTimeIntervals(pb_employee.breakwindows()), pb_employee.breakduration(), pb_employee.canmovetrains()) {}
 
-void from_json(const json& j, Employee& ts) {
-	ts.fromJSON(j);
-}
+Employee::~Employee() {}

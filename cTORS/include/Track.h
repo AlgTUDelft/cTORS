@@ -1,15 +1,13 @@
 #pragma once
+#ifndef TRACK_H
+#define TRACK_H
 #include <vector>
 #include <unordered_map>
 #include <string>
-#include <nlohmann/json.hpp>
 #include "Exceptions.h"
 #include "Utils.h"
 
-using json = nlohmann::json;
 using namespace std;
-
-//enum class Direction { A, B };
 
 enum class TrackPartType { 
 	Railroad,			/* A piece of track with one piece of track on both ends. */
@@ -28,15 +26,9 @@ enum class TrackPartType {
 	Building			/* A Railroad with a building on/over it */
 };
 
-NLOHMANN_JSON_SERIALIZE_ENUM(TrackPartType, {
-	{TrackPartType::Railroad, "Railroad"},
-	{TrackPartType::Switch, "Switch"},
-	{TrackPartType::EnglishSwitch, "EnglishSwitch"},
-	{TrackPartType::HalfEnglishSwitch, "HalfEnglishSwitch"},
-	{TrackPartType::InterSection, "InterSection"},
-	{TrackPartType::Bumper, "Bumper"},
-	{TrackPartType::Building, "Building"},
-	})
+inline TrackPartType ConvertPBTrackPartType(PBTrackPartType pb_track_part_type) {
+	return static_cast<TrackPartType>(pb_track_part_type);
+}
 
 class Facility;
 
@@ -47,18 +39,20 @@ private:
 	unordered_map<const Track*, vector<const Track*>> next;
 	vector<const Facility*> facilities;
 public:
-	string id;
-	TrackPartType type;
-	double length;
-	string name;
-	bool sawMovementAllowed;
-	bool parkingAllowed;
-	bool isElectrified;
-	bool standingAllowed;
+	const string id;
+	const TrackPartType type;
+	const double length;
+	const string name;
+	const bool sawMovementAllowed;
+	const bool parkingAllowed;
+	const bool isElectrified;
+	const bool standingAllowed;
 
-	Track();
+	Track() = delete;
 	Track(const string& id, TrackPartType type, double length, const string& name, bool sawMovementAllowed,
 		bool parkingAllowed, bool isElectrified, bool standingAllowed);
+	Track(const PBTrack& pb_track) : Track(to_string(pb_track.id()), ConvertPBTrackPartType(pb_track.type()), pb_track.length(),
+				pb_track.name(), pb_track.sawmovementallowed(), pb_track.parkingallowed(), pb_track.iselectrified(), pb_track.standingallowed()) {}
 	Track(const Track& track);
 	~Track();
 	void AssignNeighbors(vector<const Track*> aside, vector<const Track*> bside);
@@ -99,4 +93,4 @@ public:
 	inline bool operator!=(const Track& t) const { return !(*this == t); }
 };
 
-void from_json(const json& j, Track& p);
+#endif

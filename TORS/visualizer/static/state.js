@@ -3,6 +3,8 @@ var svg_layout;
 $(document).ready(function () {
     load_layout(refresh_state);
 	setup_collapsables()
+    setup_plan_selecter()
+    $("#restart-button").attr("onclick", "restart()");
 });
 
 function load_layout(cb) {
@@ -26,6 +28,25 @@ function refresh_state() {
     });
 }
 
+function restart(plan_id) {
+    /*
+     * Resets the state
+     */
+    url = '/engine/state'
+    if(typeof plan_id !== 'undefined') {
+        url += '?plan=' + plan_id
+        $("#restart-button").attr("onclick", "restart(" + plan_id+ ")");
+    }
+    $.ajax({
+        url: url,
+        type: 'PUT',
+        success: function(result) {
+            refresh_actions();
+            refresh_state();
+        }
+    });
+}
+
 function update_info(data) {
     /*
      * Update state info
@@ -40,11 +61,11 @@ function update_info(data) {
         $.each(trains, function(i, train){
             var color = get_train_color(train.id);
 			var title = '';
-			$.each(train.train_units, function(k, unit){
+			$.each(train.trains, function(k, unit){
 				title += (k > 0) ? "\n" : '';
 				title += unit + ' (' + train.train_unit_types[k] + ') ' + train.train_unit_tasks[k] ;
 			});
-            shunting_units += "<p style='color: " + color + ";' title='"+title+"'>" + train.id + " [" + train.train_units + "]</p>"
+            shunting_units += "<p style='color: " + color + ";' title='"+title+"'>" + train.id + " [" + train.trains + "]</p>"
         });
     });
     $("#shunting-units").html(shunting_units);
@@ -66,7 +87,7 @@ function update_info(data) {
 		type.appendChild(document.createTextNode(val.type));
 		tracks.appendChild(document.createTextNode(val.from + "->" + val.to));
 		var traindescription = val.id + " \t[ ";
-		if(val.train_units.toString().replace(",", "") > 0) traindescription += val.train_units + " | ";
+		if(val.trains.toString().replace(",", "") > 0) traindescription += val.trains + " | ";
 		traindescription += val.train_unit_types + " ]";
 		train.appendChild(document.createTextNode(traindescription));
 
@@ -218,4 +239,20 @@ function setup_collapsables() {
 	  });
 	}
 
+}
+
+function update_plan_select(data) {
+    var slct = $("#plan-select").first();
+    $.each(data, function(i, plan) {
+        slct.append(new Option(plan, i));
+    });
+    slct.change(function () {
+        restart(this.value)
+    });
+}
+
+function setup_plan_selecter() {
+    $.getJSON("/engine/plan", function (data) {
+        update_plan_select(data);
+    });
 }

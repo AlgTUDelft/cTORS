@@ -8,6 +8,7 @@ import json
 from location import Location
 from actions import Actions
 from state import State
+from plan import Plan
 
 path_dir = os.path.dirname(__file__)
 #layout = "KleineBinckhorstVisualizer"
@@ -29,6 +30,10 @@ def create_app() -> Flask:
     with app.app_context():
         app.engine = Engine(data_path)
         app.state = app.engine.start_session()
+        app.result = None
+        app.action_index = 0
+        app.done = False
+        app.message = ""
         app.engine.step(app.state)
         load_config(app)
 
@@ -56,6 +61,7 @@ def register_resources(api: Api):
     api.add_resource(Location, '/engine/location')
     api.add_resource(Actions, '/engine/actions')
     api.add_resource(State, '/engine/state')
+    api.add_resource(Plan, '/engine/plan')
 
 
 def load_config(app: Flask):

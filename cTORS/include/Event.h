@@ -1,4 +1,7 @@
 #pragma once
+#ifndef EVENT_H
+#define EVENT_H
+#include <queue>
 #include "Action.h"
 
 enum class EventType { ActionFinish, IncomingTrain, OutgoingTrain, DisturbanceBegin, DisturbanceEnd, Trigger, MoveUpdate };
@@ -32,3 +35,21 @@ public:
 	}
 };
 
+
+struct EventCompare
+{
+    bool operator()(const Event* left, const Event* right) { return *left > *right; }
+};
+
+
+class EventQueue : public priority_queue < const Event*, vector<const Event*>, EventCompare> {
+public:
+~EventQueue() {
+    while(size() > 0) {
+        delete top();
+        pop();
+    }
+}
+};
+
+#endif

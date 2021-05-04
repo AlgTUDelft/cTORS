@@ -17,10 +17,22 @@ SHELL ["/bin/bash", "-c"]
 
 #Install Git, curl and make
 RUN apt-get update && \
-    apt-get install -y make autoconf && \
+    apt-get install -y curl make autoconf automake libtool g++ unzip && \
     apt-get install -y cmake && \
     apt-get install -y python3-dev python3-pip && \
     apt-get clean
+
+#install protobuf
+RUN mkdir /protobuf
+WORKDIR /protobuf
+RUN curl -L -o protobuf.zip https://github.com/protocolbuffers/protobuf/releases/download/v3.15.6/protobuf-cpp-3.15.6.zip 
+RUN unzip protobuf.zip
+WORKDIR /protobuf/protobuf-3.15.6
+RUN ./configure
+RUN make
+RUN make check; exit 0
+RUN make install
+RUN ldconfig
 
 #Copy ctors folder
 RUN mkdir /ctors
@@ -30,7 +42,7 @@ WORKDIR /ctors
 
 #install requirements
 RUN python3 -m pip install -r TORS/requirements
-RUN python3 -m pip install -r TORS/requirements-gym --no-cache-dir #--no-cache-dir to prevent out of memory errors
+#RUN python3 -m pip install -r TORS/requirements-gym --no-cache-dir #--no-cache-dir to prevent out of memory errors
 RUN python3 -m pip install -r TORS/requirements-visualizer
 
 

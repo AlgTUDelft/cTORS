@@ -17,7 +17,7 @@ const string EndMoveAction::toString() const {
 }
 
 const Action* EndMoveActionGenerator::Generate(const State* state, const SimpleAction& action) const {
-	auto su = action.GetShuntingUnit();
+	auto su = state->GetShuntingUnitByTrainIDs(action.GetTrainIDs());
 	auto suState = state->GetShuntingUnitState(su);
 	return new EndMoveAction(su, su->GetStartUpTime(suState.frontTrain));
 }

@@ -1,0 +1,174 @@
+// This program has been developed by students from the bachelor Computer Science at Utrecht University within the Software and Game project course 2016 semester 2 & 2017 semester 2
+// ©Copyright Utrecht University (Department of Information and Computing Sciences)
+
+
+syntax = "proto3";
+
+package proto_tors;
+
+import "Utilities.proto";
+
+// A Location contains the part of the problem specification which is "fixed",
+// meaning that everything in the following message does not change on a regular basis.
+// Practically speaking, Location contains a definition for the track and facilities.
+message Location {
+    repeated TrackPart trackParts = 1;
+    repeated Facility facilities = 2;
+
+    // A list of all known task types
+    repeated TaskType taskTypes = 3;
+    
+    // Constants for calculating shunting time
+
+    // The constant of a movement (always the case)
+    sint32 movementConstant = 4;
+    // The time coefficient of a track in the route of a movement
+    sint32 movementTrackCoefficient = 5;
+    // The switch coefficient of a switch in the route of a movement
+    sint32 movementSwitchCoefficient = 6;
+
+    // The entries of the distance matrix for the walking distances
+    repeated WalkingDistanceEntry distanceEntries = 7;
+}
+
+message Resource {
+    // Name of this resource
+    string name = 1;
+
+    // A resource can be either a TrackPart or a Facility.
+    oneof resource {
+        // Set this field if this Resource is a TrackPart.
+        uint64 trackPartId = 3;
+
+        // Set this field if this Resource is a Facility.
+        uint64 facilityId = 4;
+
+        // Set this field if this Resource is a Staff member.
+        // Members of staff are defined in scenario.proto
+        uint64 staffId = 5;
+    }
+}
+
+// A facility is an object at the location not part of the rails.
+message Facility {
+    // A unique ID which is referenced by other messages
+    uint64 id = 1;
+
+    string type = 2;
+
+    // The TrackPart IDs this Facility can be reached from / operates on / etc.
+    repeated uint64 relatedTrackParts = 3;
+
+    // Possible tasks at this facility
+    repeated TaskType taskTypes = 4;
+
+    // The maximum number of ShuntingUnits which can use this resource at the same time
+    uint32 simultaneousUsageCount = 5;
+
+    // The time interval during which the facility can be used
+    TimeInterval timeWindow = 6;
+}
+
+enum TrackPartType {
+    RailRoad = 0;
+
+    // Switches
+    Switch = 1;
+    EnglishSwitch = 2;
+    HalfEnglishSwitch = 3 [deprecated = true];
+
+    // Other
+    Intersection = 4;
+    Bumper = 5;
+
+    // Do not add trackparts with this type when sending to HIP.
+    Building = 6;
+}
+
+// A TrackPart forms a single node in the rail graph.
+message TrackPart {
+    // A unique ID; this is used to reference this TrackPart.
+    uint64 id = 1;
+
+    TrackPartType type = 2;
+
+    // Tracks this TrackPart are connected to are defined through the aSide and bSide.
+    // An explanation per TrackPartType:
+    // RailRoad             aSide contains one end, and bSide the other
+    // Switch:              aSide is the permanent track (that's one track), and bSide contains the branching/option tracks (that's two).
+    // EnglishSwitch:       Define: AR = aSide[0], AL = aSide[1], BR = bSide[0], BL = bSide[1]. Then: AR is connected to BL and BR. AL is connected to BL and BR.
+    // HalfEnglishSwitch:   Define: AR = aSide[0], AL = aSide[1], BR = bSide[0], BL = bSide[1]. Then: AR is connected to BL and BR. AL is connected to BL (but NOT BR).
+    // Intersection:        Both parts of an ongoing track are in the same *Side.
+    // Bumper:              aSide contains the track part. bSide is empty.
+    repeated uint64 aSide = 3;
+    repeated uint64 bSide = 4;
+
+    // Length of the track in meters
+    double length = 5;
+
+    // Name of the TrackPart
+    string name = 6;
+    
+    // For railroads: whether or not a saw movement ('kopmaken') is allowed on this railroad.
+    bool sawMovementAllowed = 7;
+    
+    // For railroads: whether or not parking is allowed on this railroad.
+    bool parkingAllowed = 8;
+
+    // Denotes whether this trackpart is electrified
+    bool isElectrified = 9;
+    
+    optional bool standingAllowed = 10;
+}
+
+message TaskType {
+    oneof taskType {
+        // If the task type maps to one of PredefinedTaskType, use this type here.
+        PredefinedTaskType predefined = 1;
+
+        // Otherwise, specify a custom name.
+        string other = 2;
+    }
+}
+
+enum PredefinedTaskType {
+    // Task represents a shunting unit moving from one location to another location.
+    Move = 0;
+    // Task represents a shunting unit splitting into multiple shunting units.
+    Split = 1;
+    // Task represents two shunting units combining into one shunting unit.
+    Combine = 2;
+
+    // Task represents a shunting unit being parked on a track.
+    Wait = 3;
+    // Task represents the arrival of a shunting unit on the facility.
+    Arrive = 4;
+    // Task represents the departure of a shunting unit on the facility.
+    Exit = 5;
+    // Task represents the reversal of a shunting unit.
+    Walking = 6;
+    // Task represents the break of a member of staff.
+    Break = 7;
+    // Non-Service traffic that blocks the infrastructure
+    NonService = 8;
+    
+    BeginMove = 9;//TEMP
+    
+    EndMove = 10;//TEMP
+}
+
+message WalkingDistanceEntry {
+    // The id of the origin track part.
+    uint64 fromTrackPartId = 1;
+    // The id of the destination track part.
+    uint64 toTrackPartId = 2;
+    // The walking distance between origin and destination in seconds.
+    double distanceInSeconds = 3;
+}
+
+enum Side {
+    NoSide = 0;
+    A = 1;
+    B = 2;
+    AB = 3;
+}

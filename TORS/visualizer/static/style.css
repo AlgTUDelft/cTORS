@@ -19,9 +19,31 @@ h1, h2, h3 {
 
 }
 
+.header > * {
+    display: inline-block;
+}
+
+.header > div {
+    height: 70%;
+    float: right;
+}
+
 .header h1 {
     color: #0c9356;
     margin: 0;
+}
+
+.header button {
+    height: 100%;
+}
+
+.header button:hover {
+    cursor: pointer;
+}
+
+.header select {
+    height: 100%;
+    vertical-align: bottom;
 }
 
 .wrapper {
@@ -132,4 +154,33 @@ h1, h2, h3 {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #919191;
+}
+
+#message-box:empty {
+    display: none;
+}
+
+#message-box {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+#message-box .alert-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+
+.alert-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+
+.alert-warning {
+    color: #8a6d3b;
+    background-color: #fcf8e3;
+    border-color: #faebcc;
 }

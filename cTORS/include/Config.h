@@ -1,4 +1,6 @@
 #pragma once
+#ifndef CONFIG_H
+#define CONFIG_H
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -18,8 +20,8 @@ private:
 	map<string, bool> actionRules;
 	map<string, json> actionParams;
 
-	void importBusinessRules(const json& j);
-	void importActionRules(const json& j);
+	void ImportBusinessRules(const json& j);
+	void ImportActionRules(const json& j);
 public:
 	Config() = default;
 	Config(string path);
@@ -28,3 +30,4 @@ public:
 	const json GetActionParameters(string name) const;
 };
 
+#endif

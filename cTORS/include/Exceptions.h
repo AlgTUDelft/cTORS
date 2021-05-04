@@ -1,4 +1,6 @@
 #pragma once
+#ifndef EXCEPTIONS_H
+#define EXCEPTIONS_H
 #include <exception>
 #include <string>
 using namespace std;
@@ -11,10 +13,10 @@ private: \
 	const string message; \
 public: \
 	name() = default; \
-	name(const string& message) : message(" " + message) {}; \
+	name(const string& message) : message(string(exp_str) + " " + message) {}; \
 	~name() = default; \
-	inline virtual const char* what() const throw()  { \
-		return (exp_str + message).c_str(); \
+	inline virtual const char* what() const throw() override { \
+		return message.c_str(); \
 	} \
 };
 #endif
@@ -26,3 +28,4 @@ DEFINE_EXCEPTION(InvalidConfigException, 	"The config file specified is invalid.
 DEFINE_EXCEPTION(InvalidActionException, 	"The action is invalid.")
 DEFINE_EXCEPTION(NonExistingPathException, 	"The path does not exist.")
 
+#endif

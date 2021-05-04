@@ -38,7 +38,7 @@ class ScenarioGenerator(ABC):
             _match_trains(scenario.incoming_trains, scenario.outgoing_trains)
         else:
             for o in scenario.outgoing_trains:
-                for tu in o.shunting_unit.train_units:
+                for tu in o.shunting_unit.trains:
                     tu.id = -1    
 
 class ScenarioGeneratorFromScenario(ScenarioGenerator):
@@ -96,15 +96,15 @@ class ScenarioGeneratorFromScenario(ScenarioGenerator):
     
 #     def _get_train_selector_generator(self, scenario, n_trains):
 #         incoming_shunting_units = [incoming.shunting_unit for incoming in scenario.get_incoming_trains()]
-#         incoming_trains = [u for su in incoming_shunting_units for u in su.train_units] 
+#         incoming_trains = [u for su in incoming_shunting_units for u in su.trains] 
 #         if n_trains >= len(incoming_trains): yield incoming_trains
 #         return _random_train_selection(incoming_trains, len(incoming_trains) - n_trains, self.n_combinations)
     
     def _select_trains(self, scenario):
         incoming_shunting_units = [incoming.shunting_unit for incoming in scenario.incoming_trains]
         outgoing_shunting_units = [outgoing.shunting_unit for outgoing in scenario.outgoing_trains] 
-        incoming_trains = [u for su in incoming_shunting_units for u in su.train_units] 
-        outgoing_trains = [u for su in outgoing_shunting_units for u in su.train_units]
+        incoming_trains = [u for su in incoming_shunting_units for u in su.trains] 
+        outgoing_trains = [u for su in outgoing_shunting_units for u in su.trains]
         
         combination = next(self.combination_generator)
         not_incoming_train_units = [it for i, it in enumerate(incoming_trains) if not i in combination]
@@ -120,8 +120,8 @@ class ScenarioGeneratorFromScenario(ScenarioGenerator):
             out_su = _find_matching_shunting_unit(mu, outgoing_shunting_units)
             _remove_from_shunting_unit(out_su, mu)
                 
-        scenario.set_incoming_trains([incoming for incoming in scenario.incoming_trains if len(incoming.shunting_unit.train_units) > 0])
-        scenario.set_outgoing_trains([outgoing for outgoing in scenario.outgoing_trains if len(outgoing.shunting_unit.train_units) > 0])
+        scenario.set_incoming_trains([incoming for incoming in scenario.incoming_trains if len(incoming.shunting_unit.trains) > 0])
+        scenario.set_outgoing_trains([outgoing for outgoing in scenario.outgoing_trains if len(outgoing.shunting_unit.trains) > 0])
         scenario.set_end_time(max([o.time for o in scenario.outgoing_trains]))
                         
         
@@ -214,7 +214,7 @@ class RandomScenarioGenerator(ScenarioGenerator):
         arrival_times = {}
         arrival_track = {}
         for incoming in incomings:
-            for train in incoming.shunting_unit.train_units:
+            for train in incoming.shunting_unit.trains:
                 arrival_times[train.id] = incoming.time
                 arrival_track[train.id] = incoming.parking_track_id
         parking_tracks = self._get_parking_tracks()
@@ -299,11 +299,11 @@ def _find_matching_train(train, train_list):
     return mu
     
 def _remove_from_shunting_unit(su, train):
-    su.train_units = [t for t in su.train_units if not t is train]
+    su.trains = [t for t in su.trains if not t == train]
 
 def _find_matching_shunting_unit(train, shunting_units):
     return next((su for su in shunting_units \
-        if not next((t for t in su.train_units if t is train), None) is None), None)
+        if not next((t for t in su.trains if t == train), None) is None), None)
     
 def _match_trains(incoming, outgoing):
         to_be_matched = [tu for tu in outgoing if tu.id == -1]

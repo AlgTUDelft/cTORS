@@ -31,11 +31,11 @@ namespace cTORSTest
 
 		//Setup a two test trains
 		TrainUnitType elecTrainType("ElecTrainType", 1, 100, 100, 100, 100, 100, 50, 100, "ETT", false, false, true);
-		Train* elecTrain = new Train(0, &elecTrainType);
+		Train elecTrain = Train(0, &elecTrainType);
 		ShuntingUnit* elecSU = new ShuntingUnit(0, {elecTrain});
 
 		TrainUnitType nonElecTrainType("NonElecTrainType", 1, 100, 100, 100, 100, 100, 50, 100, "NETT", false, false, false);
-		Train* nonElecTrain = new Train(0, &nonElecTrainType);
+		Train nonElecTrain = Train(0, &nonElecTrainType);
 		ShuntingUnit* nonElecSU = new ShuntingUnit(1, {nonElecTrain});
 		
 		state.AddShuntingUnit(elecSU, &r1, &b1);

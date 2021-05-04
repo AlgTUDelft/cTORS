@@ -9,6 +9,7 @@ class TORSEnv(gym.Env):
 
     def __init__(self, config):
         super(TORSEnv, self).__init__()
+        print("Init Env")
         self.config = config
         self.engine = Engine(config['data folder']) 
         self.location = self.engine.get_location()
@@ -65,6 +66,7 @@ class TORSEnv(gym.Env):
         pass
 
     def close (self):
+        print("Close Env")
         if not self.state is None:
             self.engine.end_session(self.state)
 
@@ -72,7 +74,7 @@ class TORSEnv(gym.Env):
     def _reset(self):
         if not self.state is None:
             self.engine.end_session(self.state)
-            del self.state
+            self.state = None
         del self.scenario
 
         # TODO: Shunting units are stored in incoming and outgoin goals, which are deleted when the scenario is deleted,
@@ -106,3 +108,9 @@ class TORSEnv(gym.Env):
 	
     def print(self, text):
     	print(text)
+
+    def write_to_file(self, filename):
+        print("Get Result")
+        result = self.engine.get_result(self.state)
+        print("Serialize result")
+        result.serialize_to_file(self.engine, filename)

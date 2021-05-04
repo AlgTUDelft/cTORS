@@ -21,21 +21,20 @@ void CombineAction::Finish(State* state) const {
 }
 
 const string CombineAction::toString() const {
-	return "CombineAction " + GetCombinedShuntingUnit()->toString() + " from  "
-        + GetFrontShuntingUnit()->GetTrainString() + " and " +GetRearShuntingUnit()->GetTrainString();
+	return "CombineAction " + GetCombinedShuntingUnit()->toString() + " from  " + suString;
 }
 
 const Action* CombineActionGenerator::Generate(const State* state, const SimpleAction& action) const {
 	auto combine = static_cast<const Combine*>(&action);
-	auto frontSU = combine->GetShuntingUnit();
-    auto rearSU = combine->GetSecondShuntingUnit();
-    auto frontTrains = copy_of(frontSU->GetTrains());
-    auto rearTrains = copy_of(rearSU->GetTrains());
+	auto frontSU = state->GetShuntingUnitByTrainIDs(action.GetTrainIDs());
+    auto rearSU = state->GetShuntingUnitByTrainIDs(combine->GetSecondTrainIDs());
+    auto& frontTrains = frontSU->GetTrains();
+    auto& rearTrains = rearSU->GetTrains();
     auto duration = state->GetFrontTrain(frontSU)->GetType()->combineDuration;
     auto track = state->GetPosition(frontSU);
     auto position = state->GetPositionOnTrack(frontSU);
     auto neutral = state->IsInNeutral(frontSU) && state->IsInNeutral(rearSU);
-    vector<const Train*> combinedTrains(frontTrains);
+    vector<Train> combinedTrains(frontTrains);
     combinedTrains.insert(combinedTrains.end(), rearTrains.begin(), rearTrains.end());
     ShuntingUnit combinedSU(frontSU->GetID(), combinedTrains);
     return new CombineAction(frontSU, rearSU, combinedSU, track, duration, position, neutral);
@@ -72,4 +71,8 @@ void CombineActionGenerator::Generate(const State* state, list<const Action*>& o
 			out.push_back(Generate(state, Combine(frontSU, rearSU)));
         }
     }
+}
+
+const string Combine::GetSecondTrainsToString() const {
+    return "[" + Join(secondTrainIDs.begin(), secondTrainIDs.end(), ", ") + "]";
 }

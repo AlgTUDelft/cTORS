@@ -18,6 +18,13 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 	message(STATUS "Build type not specified: Use Release by default")
 endif ()
+if (CMAKE_BUILD_TYPE STREQUAL Release)
+	message(STATUS "Compiling in release mode")	
+	add_compile_definitions(DEBUG=0)
+else()
+	message(STATUS "Compiling in debug mode")	
+	add_compile_definitions(DEBUG=1)
+endif()
 
 #Fetch the JSON library
 FetchContent_Declare(json
@@ -29,6 +36,8 @@ if(NOT json_POPULATED)
   FetchContent_Populate(json)
   add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
+
+find_package(Protobuf REQUIRED)
 
 # Headers
 set(PROJECT_SOURCE_DIR "src")
@@ -79,6 +88,7 @@ set(TORS_SOURCE_FILES
 
 	${PROJECT_SOURCE_DIR}/engine/Config.cpp
 	${PROJECT_SOURCE_DIR}/engine/Engine.cpp
+	${PROJECT_SOURCE_DIR}/engine/Plan.cpp
 
 	${PROJECT_SOURCE_DIR}/location/Facility.cpp
 	${PROJECT_SOURCE_DIR}/location/Location.cpp
@@ -86,13 +96,10 @@ set(TORS_SOURCE_FILES
 	
 	${PROJECT_SOURCE_DIR}/scenario/Disturbance.cpp
 	${PROJECT_SOURCE_DIR}/scenario/Event.cpp
-	${PROJECT_SOURCE_DIR}/scenario/EventQueue.cpp
 	${PROJECT_SOURCE_DIR}/scenario/Scenario.cpp
 	
 	${PROJECT_SOURCE_DIR}/state/State.cpp
 	
-	${PROJECT_SOURCE_DIR}/vehicles/Incoming.cpp
-	${PROJECT_SOURCE_DIR}/vehicles/Outgoing.cpp
 	${PROJECT_SOURCE_DIR}/vehicles/ShuntingUnit.cpp
 	${PROJECT_SOURCE_DIR}/vehicles/Train.cpp
 	${PROJECT_SOURCE_DIR}/vehicles/TrainGoal.cpp
@@ -107,10 +114,11 @@ set(TORS_SOURCE_FILES
 	${PROJECT_INCLUDE_DIR}/Employee.h
 	${PROJECT_INCLUDE_DIR}/Engine.h
 	${PROJECT_INCLUDE_DIR}/Event.h
-	${PROJECT_INCLUDE_DIR}/EventQueue.h
 	${PROJECT_INCLUDE_DIR}/Exceptions.h
 	${PROJECT_INCLUDE_DIR}/Facility.h
 	${PROJECT_INCLUDE_DIR}/Location.h
+	${PROJECT_INCLUDE_DIR}/Plan.h
+	${PROJECT_INCLUDE_DIR}/Proto.h
 	${PROJECT_INCLUDE_DIR}/Scenario.h
 	${PROJECT_INCLUDE_DIR}/ShuntingUnit.h
 	${PROJECT_INCLUDE_DIR}/State.h
@@ -120,10 +128,30 @@ set(TORS_SOURCE_FILES
 	${PROJECT_INCLUDE_DIR}/Utils.h
 )
 
-add_library(cTORS SHARED ${TORS_SOURCE_FILES})
+#include_directories(${PROTOBUF_INCLUDE_DIRS})
+#include_directories(${CMAKE_CURRENT_BINARY_DIR})
+set(PROTOS_DIR "../protos")
+set(PROTOBUF_IMPORT_DIRS ${PROTOS_DIR})
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS
+	${PROTOS_DIR}/Utilities.proto
+
+	${PROTOS_DIR}/Location.proto
+	${PROTOS_DIR}/TrainUnitTypes.proto
+	${PROTOS_DIR}/Scenario.proto
+	
+	${PROTOS_DIR}/PartialOrderSchedule.proto
+	${PROTOS_DIR}/Run.proto
+	${PROTOS_DIR}/Plan.proto
+)
+
+add_library(cTORS SHARED ${PROTO_SRCS} ${PROTO_HDRS} ${TORS_SOURCE_FILES} )
+
 
 target_include_directories(cTORS PUBLIC ${PROJECT_INCLUDE_DIR})
+target_include_directories(cTORS PUBLIC ${PROTOBUF_INCLUDE_DIRS})
+target_include_directories(cTORS PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(cTORS PUBLIC nlohmann_json::nlohmann_json)
+target_link_libraries(cTORS PUBLIC ${PROTOBUF_LIBRARIES})
 
 
 

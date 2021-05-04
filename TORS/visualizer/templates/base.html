@@ -16,6 +16,10 @@
 <div class="wrapper">
     <div class="header">
         <h1>TORS Visualizer</h1>
+        <div>
+            <select id="plan-select"></select>
+            <button id="restart-button" type="button"><i class='material-icons'>cached</i></button>
+        </div>
     </div>
     <div class="location">
         <svg id="layout" width="800" height="370"></svg>
@@ -27,6 +31,7 @@
 		</div>
     </div>
     <div class="section">
+        <div id="message-box"></div>
         <div class="state">
             <h2>State info:</h2>
             <div class="state-info">

@@ -1,0 +1,96 @@
+// This program has been developed by students from the bachelor Computer Science at Utrecht University within the Software and Game project course 2016 semester 2 & 2017 semester 2
+// ©Copyright Utrecht University (Department of Information and Computing Sciences)
+
+
+syntax = "proto3";
+
+package proto_tors;
+
+import "Location.proto";
+
+message Match {
+    // The train unit involved in this matching
+    string trainUnitId = 1;
+
+    // The outgoing or outstanding train this train unit is part of
+    string trainOutId = 2;
+
+    // The position the train unit has in the outgoing train
+    uint32 position = 3;
+}
+
+message Action {
+    // Suggested starting time in seconds since the epoch
+    uint64 suggestedStartingTime = 1;
+
+    // Suggested finishing time in seconds since the epoch
+    uint64 suggestedFinishingTime = 2;
+
+    // Minimum duration of the task
+    uint64 minimumDuration = 3;
+
+    // The train units involved in this action
+    repeated string trainUnitIds = 4;
+
+    // An action can either be a movement or a task
+    oneof action {
+        // Set this field if the action is a movement
+        MovementAction movement = 5;
+
+        // Set this field if the action is a task
+        TaskAction task = 6;
+
+        // Set this field if the action is a break activity
+        BreakAction break = 7;
+    }
+
+    // ID for use in precedence graph
+    uint64 id = 8;
+
+    // The IDs of the staff members assigned to this task
+    repeated uint64 staffIds = 9;
+}
+
+message MovementAction {
+    // The IDs of the pieces of infrastructure traversed in the movement, including origin and destination
+    repeated uint64 path = 1;
+
+    // The departure side
+    proto_tors.Side fromSide = 2;
+
+    // The arrival side
+    proto_tors.Side toSide = 3;
+
+    // Indicates the position in the linked list used by HIP to evaluate the movements.
+    double order = 4;
+
+    // The parking side, which may be different from the arrival side
+    proto_tors.Side parkingSide = 5;
+}
+
+message TaskAction {
+    // The type of task, e.g. split, combine, reversal, arrive, etc.
+    proto_tors.TaskType type = 1;
+    // The ID of the location at which the task is performed
+    uint64 location = 2;
+    // The facilities assigned to the task
+    repeated FacilityInstance facilities = 3;
+    // The arrival side
+    proto_tors.Side arrivalSide = 4;
+    // The arrival direction
+    proto_tors.Side arrivalDirection = 5;
+    // The departure side
+    proto_tors.Side departureSide = 6;
+    // The train units being serviced
+    repeated string trainUnitIds = 7;
+}
+
+message FacilityInstance {
+    // The id of the facility, as given in the location.
+    uint64 id = 1;
+    // The index of the instance of the facility.
+    int32 index = 2;
+}
+
+message BreakAction {
+}

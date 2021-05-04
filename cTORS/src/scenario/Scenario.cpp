@@ -2,21 +2,24 @@
 
 const string Scenario::scenarioFileString = "scenario.json";
 
-Scenario::Scenario() : startTime(0), endTime(0)
-{
-}
+Scenario::Scenario() : startTime(0), endTime(0) {}
 
 Scenario::Scenario(string folderName, const Location& location) {
+	PBScenario pb_scenario;
+	parse_json_to_pb(fs::path(folderName) / fs::path(scenarioFileString), &pb_scenario);
+	Init(pb_scenario, location);
+}
+
+Scenario::Scenario(const PBScenario& pb_scenario, const Location& location) {
+	Init(pb_scenario, location);
+}
+
+void Scenario::Init(const PBScenario& pb_scenario, const Location& location) {
 	try {
-		ifstream fileInput(fs::path(folderName) / fs::path(scenarioFileString));
-		if (!fileInput.good())
-			throw InvalidScenarioException("The specified file '" + folderName + "' does not exist");
-		json j;
-		fileInput >> j;
-		importEmployeesFromJSON(j["workers"], location);
-		importShuntingUnitsFromJSON(j, location);
-		startTime = stoi(j.at("startTime").get<string>());
-		endTime = stoi(j.at("endTime").get<string>());
+		ImportEmployees(pb_scenario, location);
+		ImportShuntingUnits(pb_scenario, location);
+		startTime = pb_scenario.starttime();
+		endTime = pb_scenario.endtime();
 	}
 	catch (exception& e) {
 		cout << "Error in loading scenario: " << e.what() << "\n";
@@ -55,12 +58,48 @@ const size_t Scenario::GetNumberOfTrains() const {
 	return res;
 }
 
-void Scenario::importEmployeesFromJSON(const json& j, const Location& location) {
-	for (auto& jit : j) {
-		Employee* e = new Employee();
-		jit.get_to(*e);
-		string start = jit["startLocationId"].get<string>();
-		string end = jit["endLocationId"].get<string>();
+const Train* Scenario::GetTrainByID(int id) const {
+	for(auto inc : incomingTrains) {
+		for(auto& t: inc->GetShuntingUnit()->GetTrains()) {
+			if(t.GetID() == id) return &t;
+		}
+	}
+	return nullptr;
+}
+
+const Incoming* Scenario::GetIncomingBySU(const ShuntingUnit* su) const {
+	for(auto inc : incomingTrains) {
+		if(inc->GetShuntingUnit()->MatchesShuntingUnit(su)) return inc;
+	}
+	return nullptr;
+}
+
+const Outgoing* Scenario::GetOutgoingBySU(const ShuntingUnit* su) const {
+	for(auto out : outgoingTrains) {
+		if(out->GetShuntingUnit()->MatchesShuntingUnit(su)) return out;
+	}
+	return nullptr;
+}
+
+const Incoming* Scenario::GetIncomingByTrainID(int id) const {
+	for(auto inc : incomingTrains) {
+		if(inc->GetShuntingUnit()->GetTrainByID(id) != nullptr) return inc;
+	}
+	return nullptr;
+}
+
+const Outgoing* Scenario::GetOutgoingByTrainID(int id) const {
+	for(auto out : outgoingTrains) {
+		if(out->GetShuntingUnit()->GetTrainByID(id) != nullptr) return out;
+	}
+	return nullptr;
+}
+
+void Scenario::ImportEmployees(const PBScenario& pb_scenario, const Location& location) {
+	for (auto& pb_e: pb_scenario.workers()) {
+		Employee* e = new Employee(pb_e);
+		string start = to_string(pb_e.startlocationid());
+		string end = to_string(pb_e.endlocationid());
 		e->AssignTracks(location.GetTrackByID(start), location.GetTrackByID(end));
 		employees.push_back(e);
 		debug_out("Imported Employee " << e->toString());
@@ -68,36 +107,50 @@ void Scenario::importEmployeesFromJSON(const json& j, const Location& location) 
 	debug_out("finished loading employees from JSON");
 }
 
-void Scenario::importShuntingUnitsFromJSON(const json& j, const Location& location) {
-	for (auto& jit : j["trainUnitTypes"]) {
-		TrainUnitType* tt = new TrainUnitType();
-		jit.get_to(*tt);
+template<class PBTrainGoal>
+TrainGoal* ImportTrainGoal(const Location& location, const PBTrainGoal& m, bool in, bool standing) {
+	TrainGoal* g = in ? static_cast<TrainGoal*>(new Incoming(m, standing)) : new Outgoing(m, standing);
+	string park = to_string(m.parkingtrackpart());
+	string side = to_string(m.sidetrackpart());
+	g->assignTracks(location.GetTrackByID(park), location.GetTrackByID(side));
+	return g;
+}
+
+void Scenario::ImportShuntingUnits(const PBScenario& pb_scenario, const Location& location) {
+	for (auto& pb_train_type: pb_scenario.trainunittypes()) {
+		TrainUnitType* tt = new TrainUnitType(pb_train_type);
 		if (TrainUnitType::types.find(tt->displayName) != TrainUnitType::types.end())
 			delete TrainUnitType::types.at(tt->displayName);
 		TrainUnitType::types[tt->displayName] = tt;
 	}
-	
-	for (string in : {"in", "inStanding"}) {
-		for (auto& jit : j[in]) {
-			Incoming* inc = new Incoming();
-			jit.get_to(*inc);
-			string park = jit.at("parkingTrackPart").get<string>();
-			string side = jit.at("sideTrackPart").get<string>();
-			inc->assignTracks(location.GetTrackByID(park), location.GetTrackByID(side));
-			inc->setInstanding(in == "inStanding");
-			incomingTrains.push_back(inc);
-		}
-	}
-	for (auto out : { "out", "outStanding" }) {
-		for (auto& jit : j[out]) {
-			Outgoing* outg = new Outgoing();
-			jit.get_to(*outg);
-			string park = jit.at("parkingTrackPart").get<string>();
-			string side = jit.at("sideTrackPart").get<string>();
-			outg->assignTracks(location.GetTrackByID(park), location.GetTrackByID(side));
-			outg->setInstanding(out == "outStanding");
-			outgoingTrains.push_back(outg);
-		}
-	}
+	for(auto& pb_in : pb_scenario.in())
+		incomingTrains.push_back(dynamic_cast<Incoming*>(ImportTrainGoal(location, pb_in, true, false)));
+	for(auto& pb_in : pb_scenario.instanding())
+		incomingTrains.push_back(dynamic_cast<Incoming*>(ImportTrainGoal(location, pb_in, true, true)));
+	for(auto& pb_out : pb_scenario.out())
+		outgoingTrains.push_back(dynamic_cast<Outgoing*>(ImportTrainGoal(location, pb_out, false, false)));
+	for(auto& pb_out : pb_scenario.outstanding())
+		outgoingTrains.push_back(dynamic_cast<Outgoing*>(ImportTrainGoal(location, pb_out, false, true)));
 }
 
+void Scenario::Serialize(PBScenario* pb_scenario) const {
+	for(auto inc: incomingTrains) {
+		inc->Serialize(
+			inc->IsInstanding() ?
+			pb_scenario->add_instanding() :
+			pb_scenario->add_in()
+		);
+	}
+	for(auto out: outgoingTrains) {
+		out->Serialize(
+			out->IsInstanding() ?
+			pb_scenario->add_outstanding() :
+			pb_scenario->add_out()
+		);
+	}
+	pb_scenario->set_starttime(GetStartTime());
+	pb_scenario->set_endtime(GetEndTime());
+	for(auto& [name, type]: TrainUnitType::types) {
+		type->Serialize(pb_scenario->add_trainunittypes());
+	}
+}

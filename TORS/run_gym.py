@@ -4,7 +4,7 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.monitor import Monitor
 from rl.policy import ACPwithInvalidActions
 
-use_save = False
+use_save = True
 
 data_folder = "episode.json" 
 tensorboard_log = "./log_tensorboard/"
@@ -21,9 +21,12 @@ else:
   model = PPO.load(model_save)
 
 obs = env.reset()
+run = 0
 for i in range(2000):
   action, _states = model.predict(obs)
   obs, rewards, done, info = env.step(action)
   env.render()
   if done:
+    env.write_to_file("./runs/run_"+str(run)+".json")
     obs = env.reset()
+    run += 1

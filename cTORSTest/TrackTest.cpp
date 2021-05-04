@@ -1,7 +1,5 @@
 #include "doctest/doctest.h"
-#include "nlohmann/json.hpp"
 #include "Track.h"
-using json = nlohmann::json;
 
 namespace cTORSTest
 {
@@ -31,27 +29,5 @@ namespace cTORSTest
 		CHECK(!t2.IsASide(&t5));
 		CHECK(t2.IsBSide(&t4));
 		CHECK(!t2.IsBSide(&t3));
-	}
-
-	TEST_CASE("Json Track Test") {
-		json j;
-		j["id"] = "r0";
-		j["type"] = "RailRoad";
-		j["length"] = 100;
-		j["name"] = "rail0";
-		j["sawMovementAllowed"] = true;
-		j["parkingAllowed"] = true;
-		j["isElectrified"] = true;
-		j["standingAllowed"] = true;
-		Track t;
-		j.get_to(t);
-		CHECK(t.id=="r0");
-		CHECK(t.type==TrackPartType::Railroad);
-		CHECK(t.length==100);
-		CHECK(t.name=="rail0");
-		CHECK(t.sawMovementAllowed);
-		CHECK(t.parkingAllowed);
-		CHECK(t.isElectrified);
-		CHECK(t.standingAllowed);
 	}
 }

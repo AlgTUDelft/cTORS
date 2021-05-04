@@ -56,7 +56,7 @@ class CMakeBuild(build_ext):
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
                                                               self.distribution.get_version())
         subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=ext.sourcedir+"/build", env=env)
-        subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=ext.sourcedir+"/build")
+        subprocess.check_call(['cmake', '--build', '.', '--target', 'pyTORS'] + build_args, cwd=ext.sourcedir+"/build")
 
 setup(
     name='pyTORS',

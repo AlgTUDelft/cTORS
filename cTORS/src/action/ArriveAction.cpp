@@ -5,11 +5,10 @@ void ArriveAction::Start(State* state) const {
 	const Track* parkingTrack = incoming->GetParkingTrack();
 	const Track* sideTrack = incoming->GetSideTrack();
 	const ShuntingUnit* su = GetShuntingUnit();
-
 	state->AddShuntingUnit(su, parkingTrack, sideTrack);
 	if (!incoming->IsInstanding())
 		state->ReserveTracks(vector({ parkingTrack, sideTrack }));
-	state->addTasksToTrains(incoming->GetTasks());
+	state->AddTasksToTrains(incoming->GetTasks());
 	state->RemoveIncoming(incoming);
 	state->AddActiveAction(su, this);
 	state->SetWaiting(su, false);
@@ -27,7 +26,9 @@ const string ArriveAction::toString() const {
 
 const Action* ArriveActionGenerator::Generate(const State* state, const SimpleAction& action) const {
 	auto arrive = static_cast<const Arrive*>(&action);
-	return new ArriveAction(arrive->GetShuntingUnit(), 0, arrive->GetIncoming());
+	auto inc = state->GetIncomingByID(arrive->GetIncomingID());
+	auto su = inc->GetShuntingUnit();
+	return new ArriveAction(su, 0, inc);
 }
 
 void ArriveActionGenerator::Generate(const State* state, list<const Action*>& out) const {

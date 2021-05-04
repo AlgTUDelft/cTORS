@@ -1,32 +1,34 @@
 #pragma once
+#ifndef SHUNTING_UNIT_H
+#define SHUNTING_UNIT_H
 #include <vector>
-#include <nlohmann/json.hpp>
 #include "Train.h"
 #include "Track.h"
 #include "Utils.h"
 using namespace std;
-using json = nlohmann::json;
-
 class Action;
 
 class ShuntingUnit {
 private:
 	int id;
-	vector<const Train*> trains;
+	vector<Train> trains;
 	double length;
 	bool needsElectricity;
+	string trainString;
+	vector<int> trainIDs;
 	void UpdateValues();
 public:
-	ShuntingUnit() = default;
-	ShuntingUnit(int id, vector<const Train*> trains);
-	ShuntingUnit(const ShuntingUnit& su);
-	~ShuntingUnit();
-	void fromJSON(const json& j);
-
+	ShuntingUnit() = delete;
+	ShuntingUnit(int id, const vector<Train>& trains) : id(id), trains(trains) { UpdateValues(); }
+	ShuntingUnit(const PBTrainGoal& pb_tg);
+	ShuntingUnit(const ShuntingUnit& su) = default;
+	~ShuntingUnit() = default;
+	
 	inline const string toString() const {
 		return "ShuntingUnit-" + to_string(id);
 	}
-	const string GetTrainString() const;
+	inline const string& GetTrainString() const { return trainString; }
+	inline const vector<int>& GetTrainIDs() const { return trainIDs; };
 
 	inline bool operator==(const ShuntingUnit& su) const { return (id == su.id); }
 	inline bool operator!=(const ShuntingUnit& su) const { return !(*this == su); }
@@ -35,20 +37,19 @@ public:
 	inline double GetLength() const { return length; }
 	inline bool NeedsElectricity() const { return needsElectricity; }
 	inline size_t GetNumberOfTrains() const { return trains.size(); }
-	inline const vector<const Train*>& GetTrains() const { return trains; }
+	inline const vector<Train>& GetTrains() const { return trains; }
 	int GetSetbackTime(const Train* const frontTrain, bool normTime, bool walkTime, int setbackTime) const;
 	inline int GetSetbackTime(const Train* const frontTrain, bool normTime, bool walkTime) const { return GetSetbackTime(frontTrain, normTime, walkTime, 0); }
 	inline int GetStartUpTime(const Train* const frontTrain) const { return frontTrain->GetType()->startUpTime; }
-	inline void SetTrains(vector<const Train*> trains) {
+	inline void SetTrains(vector<Train>& trains) {
 		this->trains = trains;
 		UpdateValues();
 	}
 	bool MatchesShuntingUnit(const ShuntingUnit* su) const ;
+	bool MatchesTrainIDs(const vector<int>& ids, const vector<const TrainUnitType*>& types) const;
+	const Train* GetTrainByID(int id) const;
+	int GetTrainIndexByID(int id) const;
 };
-
-inline void from_json(const json& j, ShuntingUnit& su) {
-	su.fromJSON(j);
-}
 
 struct ShuntingUnitHash {
 	std::size_t operator()(const ShuntingUnit* const & k) const {
@@ -61,3 +62,5 @@ struct ShuntingUnitEquals {
 		return lhs->GetID() == rhs->GetID();
 	}
 };
+
+#endif

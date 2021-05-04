@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package proto_tors;
+
+// Message representing a single time interval.
+message TimeInterval {
+    // Start of the interval in seconds since the epoch.
+    double start = 1;
+    // End of the interval in seconds since the epoch.
+    double end = 2;
+}
+
+enum SolverBackend {
+    MIPCL = 0;
+    CPLEX = 1;
+    LPSOLVE = 2;
+    CBC = 3;
+}

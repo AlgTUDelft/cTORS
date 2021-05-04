@@ -1,4 +1,6 @@
 #pragma once
+#ifndef BUSINESS_RULES_H
+#define BUSINESS_RULES_H
 #include "Action.h"
 #include "State.h"
 
@@ -61,3 +63,5 @@ DEFINE_BUSINESSRULE(understaffed_rule)
 DEFINE_BUSINESSRULE(order_preserve_rule)
 DEFINE_BUSINESSRULE(park_combine_split_rule)
 DEFINE_BUSINESSRULE(setback_combine_split_rule)
+
+#endif

@@ -17,7 +17,7 @@ if __name__ == "__main__":
     start = time.time()
     manager = Manager(Config.load_from_file(args.episode, "episode"), Config.load_from_file(args.agent, "agent"))
     if args.train:
-        manager.train()
+        raise NotImplementedError("Not yet implemented")
     else:
         manager.run()
     print("Total running time: {}".format(time.time() - start))

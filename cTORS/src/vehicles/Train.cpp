@@ -2,16 +2,34 @@
 
 map<string, TrainUnitType *> TrainUnitType::types;
 
-Train::Train(int id, TrainUnitType* type)
-{
-	this->id = id;
-	this->type = type;
-	this->forcedMatch = false;
+void TrainUnitType::Serialize(PBTrainUnitType* pb_tt) const {
+	pb_tt->set_displayname(displayName);
+	pb_tt->set_carriages(carriages);
+	pb_tt->set_length(length);
+	pb_tt->set_combineduration(combineDuration);
+	pb_tt->set_splitduration(splitDuration);
+	pb_tt->set_backnormtime(backNormTime);
+	pb_tt->set_backadditiontime(backAdditionTime);
+	pb_tt->set_travelspeed(travelSpeed);
+	pb_tt->set_startuptime(startUpTime);
+	pb_tt->set_typeprefix(typePrefix);
+	pb_tt->set_needsloco(needsLoco);
+	pb_tt->set_isloco(isLoco);
+	pb_tt->set_needselectricity(needsElectricity);
 }
 
-Train::Train(const Train &train) : id(train.id), type(train.type), forcedMatch(train.forcedMatch) {}
+void Task::Serialize(PBTask* pb_task) const {
+	auto pb_taskType = pb_task->mutable_type();
+	pb_taskType->set_other(taskType);
+	pb_task->set_priority(priority);
+	pb_task->set_duration(duration);
+	for(auto& s: skills) {
+		pb_task->add_requiredskills(s);
+	}
+}
 
-Train::~Train() {}
+Train::Train(const PBTrainUnit& pb_train) 
+	: Train(pb_train.id()=="****" ? -1 : stoi(pb_train.id()), TrainUnitType::types.at(pb_train.typedisplayname())) {}
 
 bool Train::operator==(const Train& train) const {
 	return (id != -1 && id == train.id) || this == &train;
@@ -21,34 +39,7 @@ const string Train::toString() const {
 	return "(" + to_string(id) + ", " + type->toString() + ")";
 }
 
-void Train::fromJSON(const json& j) {
-	string temp = j.at("id").get<string>();
-	if (temp == "****")
-		id = -1;
-	else id = stoi(temp);
-	type = TrainUnitType::types.at(j.at("typeDisplayName"));
-}
-
-void from_json(const json& j, TrainUnitType& tt) {
-	j.at("displayName").get_to(tt.displayName);
-	j.at("carriages").get_to(tt.carriages);
-	j.at("length").get_to(tt.length);
-	tt.combineDuration = stoi(j.at("combineDuration").get<string>());
-	tt.splitDuration = stoi(j.at("splitDuration").get<string>());
-	tt.backNormTime = stoi(j.at("backNormTime").get<string>());
-	tt.backAdditionTime = stoi(j.at("backAdditionTime").get<string>());
-	tt.setbackTime = tt.carriages*tt.backAdditionTime;
-	tt.travelSpeed = stoi(j.at("travelSpeed").get<string>());
-	tt.startUpTime = stoi(j.at("startUpTime").get<string>());
-	j.at("typePrefix").get_to(tt.typePrefix);
-	j.at("needsLoco").get_to(tt.needsLoco);
-	j.at("isLoco").get_to(tt.isLoco);
-	j.at("needsElectricity").get_to(tt.needsElectricity);
-}
-
-void from_json(const json& j, Task& t) {
-	j.at("priority").get_to(t.priority);
-	j.at("type").at("other").get_to(t.taskType);
-	t.duration = stoi(j.at("duration").get<string>());
-	j.at("requiredSkills").get_to(t.skills);
+void Train::Serialize(PBTrainUnit* pb_t) const {
+	pb_t->set_id(to_string(id));
+	pb_t->set_typedisplayname(type->displayName);
 }

@@ -1,9 +1,11 @@
 #pragma once
+#ifndef EMPLOYEE_H
+#define EMPLOYEE_H
 #include <string>
 #include <vector>
 #include "Track.h"
+#include "Utils.h"
 using namespace std;
-using json = nlohmann::json;
 
 struct TimeShift {
 	int start;
@@ -13,23 +15,25 @@ struct TimeShift {
 class Employee
 {
 private:
-	string id;
-	string name;
-	string type;
-	vector<string> skills;
-	vector<TimeShift> shifts;
-	vector<TimeShift> breakWindows;
-	int breakDuration;
+	const string id;
+	const string name;
+	const string type;
+	const vector<string> skills;
+	const vector<TimeShift> shifts;
+	const vector<TimeShift> breakWindows;
+	const int breakDuration;
 	Track* startLocation;
 	Track* endLocation;
-	bool canMoveTrains;
+	const bool canMoveTrains;
 
 public:
-	Employee() = default;
+	Employee() = delete;
+	Employee(const string& id, const string& name, const string& type, const vector<string>& skills, 
+		const vector<TimeShift>& shifts, const vector<TimeShift>& breakWindows, const int breakDuration, const bool canMoveTrains) :
+		id(id), name(name), type(type), skills(skills), shifts(shifts), breakWindows(breakWindows), breakDuration(breakDuration), canMoveTrains(canMoveTrains) {}
+	Employee(const PBMemberOfStaff& pb_employee);
 	Employee(const Employee& employee) = default;
 	~Employee();
-
-	void fromJSON(const json& j);
 
 	inline string toString() {
 		return "Employee-" + id + " " + name;
@@ -44,7 +48,5 @@ public:
 	}
 };
 
-void from_json(const json& j, TimeShift& ts);
-void from_json(const json& j, Employee& e);
 
-
+#endif

@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package proto_tors;
+
+import "Plan.proto";
+
+message PartialOrderSchedule {
+    // The actions in the plan
+    repeated Action actions = 1;
+    // The matching between the incoming and outgoing trains
+    repeated Match matching = 2;
+    // The edges of the precedence graph
+    repeated POSPrecedenceConstraint graph = 3;
+    bool feasible = 4;
+}
+
+message POSPrecedenceConstraint {
+    // The ID of the task to be performed first
+    uint64 preActionId = 1;
+    // The ID of the task to be performed second
+    uint64 postActionId = 2;
+    // The minimum amount of time between the end time of the first task and the start time of the second task
+    double minimumTimeLag = 3;
+}

@@ -1,25 +1,30 @@
 #pragma once
+#ifndef FACILITY_H
+#define FACILITY_H
 #include <vector>
 #include <string>
 #include "Track.h"
 #include "Train.h"
-using json = nlohmann::json;
+#include "Utils.h"
 
 class Facility
 {
 private:
-	string id;
-	string type;
+	const int id;
+	const string type;
 	vector<Track*> tracks;
-	vector<string> tasks;
-	int simultaneousUsageCount;
-	int tStart;
-	int tEnd;
+	const vector<string> tasks;
+	const int simultaneousUsageCount;
+	const double tStart;
+	const double tEnd;
 public:
-	Facility();
-	Facility(const string& id, const string& type, vector<Track*> tracks,
-		vector<string> tasks, int simultaneousUsageCount, int tStart, int tEnd);
-	~Facility();
+	Facility() = delete;
+	Facility(const int id, const string& type,
+		const vector<string>& tasks, int simultaneousUsageCount, double tStart, double tEnd) : 
+			id(id), type(type), tasks(tasks), simultaneousUsageCount(simultaneousUsageCount), tStart(tStart), tEnd(tEnd) {}
+	Facility(const PBFacility& pb_facility) : Facility(pb_facility.id(), pb_facility.type(), ConvertPBTaskTypes(pb_facility.tasktypes()),
+			pb_facility.simultaneoususagecount(), pb_facility.timewindow().start(), pb_facility.timewindow().end()) {}
+	~Facility() = default;
 	
 	void AssignTracks(vector<Track*> tracks);
 	
@@ -29,17 +34,12 @@ public:
 	bool ExecutesTask(const Task* task) const;
 	inline bool IsAvailable(int start, int duration) const { return start >= tStart && start + duration < tEnd; }
 	
-	void fromJSON(const json& j);
-	
-	inline const string toString() const { return "Facility " + id; }
-	inline const string& GetID() const { return id; }
+	inline const string toString() const { return "Facility " + to_string(id); }
+	inline const int GetID() const { return id; }
 	inline const string& GetType() const { return type; }
 	
 	inline bool operator==(const Facility& t) const { return (id == t.id); }
 	inline bool operator!=(const Facility& t) const { return !(*this == t); }
 };
 
-void from_json(const json& j, Facility& f);
-
-
-
+#endif

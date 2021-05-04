@@ -1,16 +1,16 @@
 #pragma once
+#ifndef LOCATION_H
+#define LOCATION_H
 #include <vector>
 #include <fstream>
 #include <exception>
 #include <unordered_map>
-#include <nlohmann/json.hpp>
 #include <filesystem>
 #include "Utils.h"
 #include "Track.h"
 #include "Facility.h"
 #include "Exceptions.h"
 #include "Utils.h"
-using json = nlohmann::json;
 using namespace std;
 #define MAX_PATH_LENGTH INT32_MAX
 
@@ -30,6 +30,7 @@ class Location
 private:
 	static const string locationFileString;
 	
+	string path;
 	vector<Track*> tracks;
 	vector<Facility*> facilities;
 	unordered_map<Position, double> distanceMatrix;
@@ -41,19 +42,22 @@ private:
 	int movementConstant;
 	map<const TrackPartType, int> moveDuration;
 	
-	void importTracksFromJSON(const json& j);
-	void importFacilitiesFromJSON(const json& j);
-	void importDistanceMatrix(const json& j);
+	void ImportTracks(const PBLocation& pb_location);
+	void ImportFacilities(const PBLocation& pb_location);
+	void ImportDistanceMatrix(const PBLocation& pb_location);
 public:
 	Location() = delete;
 	Location(const string &path);
 	Location(const Location& location) = default;
 	~Location();
 	
+	inline const string& GetLocationFilePath() const { return path; }
+
 	inline Track* GetTrackByID(const string& id) const { return trackIndex.at(id); }
 
 	inline const vector<Track*>& GetTracks() const { return tracks; }
 	inline const vector<Facility*>& GetFacilities() const { return facilities; }
+	const Facility* GetFacilityByID(int id) const;
 
 	inline double GetDistance(const Track* from, const Track* to) const { return distanceMatrix.at({from, to}); }
 	inline int GetDurationByType(const Track* track) const { 
@@ -67,3 +71,4 @@ public:
 	const Path& GetNeighborPath(const Position& from, const Track* destination) const;
 };
 
+#endif

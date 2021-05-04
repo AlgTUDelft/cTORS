@@ -1,8 +1,9 @@
 from flask_restful import Resource
-from flask import Response, current_app
+from flask import Response, request, current_app
 import json
 from typing import List
 from pyTORS import ShuntingUnit
+from plan import get_plan
 
 class State(Resource):
 
@@ -21,6 +22,27 @@ class State(Resource):
         }
 
         return Response(json.dumps(state), mimetype='application/json')
+
+    def put(self):
+        """
+        Reset the state
+        """
+        current_app.engine.end_session(current_app.state)
+        if "plan" in request.args:
+            result_path = None
+            try:
+                plan_id = int(request.args["plan"])
+                result_path = get_plan(plan_id)
+                current_app.result = current_app.engine.import_result(result_path)
+            finally:
+                if result_path is None: return Response("Invalid result id", status=400)
+            current_app.action_index = 0
+            current_app.state = current_app.engine.start_session(current_app.result.scenario)
+        else:
+            current_app.state = current_app.engine.start_session()
+        current_app.done = False
+        current_app.message = ""
+        current_app.engine.step(current_app.state)
     
     def get_time(self) -> int:
         return current_app.state.time
@@ -60,9 +82,9 @@ class State(Resource):
                         "direction": direction,
                         "in_neutral": state.is_in_neutral(train),
                         "moving": state.is_moving(train),
-                        "train_units": [tu.id for tu in train.get_trains()],
-			            "train_unit_types": [str(tu.type) for tu in train.train_units],
-                        "train_unit_tasks": [", ".join([str(task) for task in state.get_tasks_for_train(tu)]) for tu in train.train_units],
+                        "trains": [tu.id for tu in train.trains],
+			            "train_unit_types": [str(tu.type) for tu in train.trains],
+                        "train_unit_tasks": [", ".join([str(task) for task in state.get_tasks_for_train(tu)]) for tu in train.trains],
                         "length": train.length
                     }
 
@@ -91,8 +113,8 @@ class State(Resource):
                 "from": (goal.side_track if goal in incoming_list else goal.parking_track).name,
                 "to": (goal.parking_track if goal in incoming_list else goal.side_track).name,
                 "id": goal.shunting_unit.id,
-                "train_units": [tu.id for tu in goal.shunting_unit.train_units],
-                "train_unit_types":[str(tu.type) for tu in goal.shunting_unit.train_units]
+                "trains": [tu.id for tu in goal.shunting_unit.trains],
+                "train_unit_types":[str(tu.type) for tu in goal.shunting_unit.trains]
             })
         
         
