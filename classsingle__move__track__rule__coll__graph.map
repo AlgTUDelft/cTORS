@@ -1,0 +1,4 @@
+<map id="single_move_track_rule" name="single_move_track_rule">
+<area shape="rect" id="node1" title="Rule that verifies that at most one shunting unit can use a piece of track at a given time." alt="" coords="5,80,183,107"/>
+<area shape="rect" id="node2" href="$classBusinessRule.html" title="Abstract base class for all the business rules." alt="" coords="39,5,149,32"/>
+</map>

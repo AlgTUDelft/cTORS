@@ -1,0 +1,9 @@
+<map id="include/TrainGoals.h" name="include/TrainGoals.h">
+<area shape="rect" id="node1" title=" " alt="" coords="8,5,161,32"/>
+<area shape="rect" id="node2" href="$ShuntingUnit_8h.html" title=" " alt="" coords="25,80,144,107"/>
+<area shape="rect" id="node3" href="$Train_8h.html" title=" " alt="" coords="7,155,72,181"/>
+<area shape="rect" id="node6" href="$Track_8h.html" title=" " alt="" coords="96,155,164,181"/>
+<area shape="rect" id="node4" href="$Utils_8h.html" title=" " alt="" coords="7,229,71,256"/>
+<area shape="rect" id="node5" href="$Proto_8h.html" title=" " alt="" coords="5,304,73,331"/>
+<area shape="rect" id="node7" href="$Exceptions_8h.html" title=" " alt="" coords="96,229,201,256"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="TrainGoal" name="TrainGoal">
+<area shape="rect" id="node1" title="The abstract base class for the Incoming and Outgoing classes." alt="" coords="76,109,159,136"/>
+<area shape="rect" id="node2" href="$classShuntingUnit.html" title="A ShuntingUnit describes connected Trains that are shunted as one unit." alt="" coords="5,5,112,32"/>
+<area shape="rect" id="node3" href="$classTrack.html" title="A Track describes a track part and its connections." alt="" coords="149,5,205,32"/>
+</map>

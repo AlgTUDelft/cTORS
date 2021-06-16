@@ -1,0 +1,28 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classBusinessRule.html" title="Abstract base class for all the business rules." alt="" coords="5,629,115,656"/>
+<area shape="rect" id="node2" href="$classavailable__facility__rule.html" title="Rule that verifies that tasks assigned to a facility are only executed when that facility is availabl..." alt="" coords="187,5,353,32"/>
+<area shape="rect" id="node3" href="$classblocked__first__track__rule.html" title="Rule that verifies that shunting units, upon starting a movement, are not blocked on exit by other sh..." alt="" coords="182,56,358,83"/>
+<area shape="rect" id="node4" href="$classblocked__track__rule.html" title="Rule that verifies that moving shunting units are not blocked by other shunting units." alt="" coords="198,107,342,133"/>
+<area shape="rect" id="node5" href="$classcapacity__facility__rule.html" title="Rule that verifies that no more tasks are executed at a facility than the facility can handle." alt="" coords="189,157,351,184"/>
+<area shape="rect" id="node6" href="$classcorrect__facility__rule.html" title="Rule that verifies that service tasks are executed at the correct facility." alt="" coords="195,208,345,235"/>
+<area shape="rect" id="node7" href="$classdisabled__facility__rule.html" title="Rule that verifies that no tasks are assigned to facilities which are disabled by a disturbance." alt="" coords="189,259,351,285"/>
+<area shape="rect" id="node8" href="$classelectric__move__rule.html" title="Rule that verifies that shunting units which need electricity park only on electrified tracks." alt="" coords="197,309,343,336"/>
+<area shape="rect" id="node9" href="$classelectric__track__rule.html" title="Rule that verifies that shunting units which need electricity park only on electrified tracks." alt="" coords="199,360,341,387"/>
+<area shape="rect" id="node10" href="$classend__correct__order__on__track__rule.html" title="Rule that verifies that shunting units which stay in the shunting yard after the scheduling period wi..." alt="" coords="189,411,351,453"/>
+<area shape="rect" id="node11" href="$classin__correct__time__rule.html" title="Rule that verifies that shunting units that are arriving, arrive at the correct time." alt="" coords="193,477,347,504"/>
+<area shape="rect" id="node12" href="$classlegal__on__parking__track__rule.html" title="Rule that verifies that parked shunting units are on a track where parking is allowed." alt="" coords="167,528,373,555"/>
+<area shape="rect" id="node13" href="$classlegal__on__setback__track__rule.html" title="Rule that verifies if a shunting unit is parked on a track where setback is allowed." alt="" coords="167,579,373,605"/>
+<area shape="rect" id="node14" href="$classlength__track__rule.html" title="Rule that verifies that shunting units on a single track do not take up more space than available on ..." alt="" coords="203,629,337,656"/>
+<area shape="rect" id="node15" href="$classmandatory__service__task__rule.html" title="Rule that verifies that all required service tasks are performed before a shunting unit leaves the sh..." alt="" coords="163,680,377,707"/>
+<area shape="rect" id="node16" href="$classoptional__service__task__rule.html" title="Rule that verifies that all optional service tasks are performed before a shunting unit leaves the sh..." alt="" coords="172,731,368,757"/>
+<area shape="rect" id="node17" href="$classorder__preserve__rule.html" title="Rule that verifies that combining or splitting shunting units does not change the order of train unit..." alt="" coords="194,781,346,808"/>
+<area shape="rect" id="node18" href="$classout__correct__order__rule.html" title="Rule that verifies that leaving shunting units have their train units in the correct order when they ..." alt="" coords="186,832,354,859"/>
+<area shape="rect" id="node19" href="$classout__correct__time__rule.html" title="Rule that verifies that leaving shunting units leave at the correct time." alt="" coords="188,883,352,909"/>
+<area shape="rect" id="node20" href="$classout__correct__track__rule.html" title="Rule that verifies that leaving shunting units leave over the correct tracks." alt="" coords="187,933,353,960"/>
+<area shape="rect" id="node21" href="$classpark__combine__split__rule.html" title="Rule that verifies that combine and split actions on shunting units are only performed on tracks wher..." alt="" coords="179,984,361,1011"/>
+<area shape="rect" id="node22" href="$classsetback__combine__split__rule.html" title="Rule that verifies that combine and split actions on shunting units are only performed on tracks wher..." alt="" coords="169,1035,371,1061"/>
+<area shape="rect" id="node23" href="$classsetback__once__rule.html" title="Rule that verifies that a setback action is not performed on a shunting unit which is already in a ne..." alt="" coords="199,1085,341,1112"/>
+<area shape="rect" id="node24" href="$classsetback__track__rule.html" title="Rule that verifies that performing a setback action on a shunting unit is allowed on the track where ..." alt="" coords="197,1136,343,1163"/>
+<area shape="rect" id="node25" href="$classsingle__move__track__rule.html" title="Rule that verifies that at most one shunting unit can use a piece of track at a given time." alt="" coords="181,1187,359,1213"/>
+<area shape="rect" id="node26" href="$classunderstaffed__rule.html" title="Rule that verifies that all tasks have enough employees assigned, with the right skills,..." alt="" coords="202,1237,338,1264"/>
+</map>

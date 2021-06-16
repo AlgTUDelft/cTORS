@@ -1,0 +1,4 @@
+<map id="legal_on_parking_track_rule" name="legal_on_parking_track_rule">
+<area shape="rect" id="node1" title="Rule that verifies that parked shunting units are on a track where parking is allowed." alt="" coords="5,80,211,107"/>
+<area shape="rect" id="node2" href="$classBusinessRule.html" title="Abstract base class for all the business rules." alt="" coords="53,5,163,32"/>
+</map>

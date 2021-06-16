@@ -1,0 +1,4 @@
+<map id="setback_track_rule" name="setback_track_rule">
+<area shape="rect" id="node1" title="Rule that verifies that performing a setback action on a shunting unit is allowed on the track where ..." alt="" coords="5,80,151,107"/>
+<area shape="rect" id="node2" href="$classBusinessRule.html" title="Abstract base class for all the business rules." alt="" coords="23,5,133,32"/>
+</map>

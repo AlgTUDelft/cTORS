@@ -1,0 +1,4 @@
+<map id="blocked_track_rule" name="blocked_track_rule">
+<area shape="rect" id="node1" title="Rule that verifies that moving shunting units are not blocked by other shunting units." alt="" coords="5,80,149,107"/>
+<area shape="rect" id="node2" href="$classBusinessRule.html" title="Abstract base class for all the business rules." alt="" coords="23,5,132,32"/>
+</map>

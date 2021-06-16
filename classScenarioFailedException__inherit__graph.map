@@ -1,0 +1,4 @@
+<map id="ScenarioFailedException" name="ScenarioFailedException">
+<area shape="rect" id="node1" title="Raise this exception when a TORS session ends in an invalid, or finished but unsolved State." alt="" coords="5,80,185,107"/>
+<area shape="rect" id="node2" title=" " alt="" coords="52,5,139,32"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="Setback" name="Setback">
+<area shape="rect" id="node1" title="The Setback action changes the direction of the ShuntingUnit." alt="" coords="22,80,97,107"/>
+<area shape="rect" id="node2" href="$classSimpleAction.html" title="The abstract base class for simple action descriptions." alt="" coords="5,5,113,32"/>
+</map>

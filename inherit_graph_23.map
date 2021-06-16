@@ -1,0 +1,14 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classSimpleAction.html" title="The abstract base class for simple action descriptions." alt="" coords="5,259,113,285"/>
+<area shape="rect" id="node2" href="$classArrive.html" title="The Arrive action lets a scheduled ShuntingUnit arrive on the shunting yard." alt="" coords="178,5,239,32"/>
+<area shape="rect" id="node3" href="$classBeginMove.html" title="The BeginMove action changes the state of a ShuntingUnit to moving." alt="" coords="161,56,256,83"/>
+<area shape="rect" id="node4" href="$classCombine.html" title="The Combine action combines two ShuntingUnits into one ShuntingUnit." alt="" coords="169,107,249,133"/>
+<area shape="rect" id="node5" href="$classEndMove.html" title="The EndMove action changes the state of a ShuntingUnit to not moving." alt="" coords="167,157,250,184"/>
+<area shape="rect" id="node6" href="$classExit.html" title="The Exit action lets a scheduled ShuntingUnit depart from the shunting yard." alt="" coords="185,208,232,235"/>
+<area shape="rect" id="node7" href="$classMove.html" title="The Move action moves a ShuntingUnit from one Track to a neighboring Railroad Track." alt="" coords="179,259,238,285"/>
+<area shape="rect" id="node8" href="$classMultiMove.html" title="The MultiMove action moves a ShuntingUnit from one Track to another Railroad Track." alt="" coords="163,309,254,336"/>
+<area shape="rect" id="node9" href="$classService.html" title="The Service action executes a task on the specified train." alt="" coords="173,360,244,387"/>
+<area shape="rect" id="node10" href="$classSetback.html" title="The Setback action changes the direction of the ShuntingUnit." alt="" coords="171,411,246,437"/>
+<area shape="rect" id="node11" href="$classSplit.html" title="The Split action splits a ShuntingUnit into two separate ShuntingUnits based on the splitIndex." alt="" coords="183,461,234,488"/>
+<area shape="rect" id="node12" href="$classWait.html" title="The Wait action instructs this ShuntingUnit to wait until the next Event." alt="" coords="183,512,234,539"/>
+</map>

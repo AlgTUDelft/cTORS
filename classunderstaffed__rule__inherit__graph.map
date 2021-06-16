@@ -1,0 +1,4 @@
+<map id="understaffed_rule" name="understaffed_rule">
+<area shape="rect" id="node1" title="Rule that verifies that all tasks have enough employees assigned, with the right skills,..." alt="" coords="5,80,141,107"/>
+<area shape="rect" id="node2" href="$classBusinessRule.html" title="Abstract base class for all the business rules." alt="" coords="19,5,128,32"/>
+</map>

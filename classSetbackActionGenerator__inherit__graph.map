@@ -1,0 +1,4 @@
+<map id="SetbackActionGenerator" name="SetbackActionGenerator">
+<area shape="rect" id="node1" title="The SetbackActionGenerator generates SetbackActions." alt="" coords="5,80,185,107"/>
+<area shape="rect" id="node2" href="$classActionGenerator.html" title="An abstract base class for the ActionGenerators." alt="" coords="31,5,159,32"/>
+</map>

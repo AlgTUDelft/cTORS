@@ -1,0 +1,5 @@
+<map id="SplitActionGenerator" name="SplitActionGenerator">
+<area shape="rect" id="node1" title="The SplitActionGenerator generates SplitActions." alt="" coords="5,171,163,197"/>
+<area shape="rect" id="node2" href="$classActionGenerator.html" title="An abstract base class for the ActionGenerators." alt="" coords="20,95,148,121"/>
+<area shape="rect" id="node3" href="$classLocation.html" title="A Location describes a shunting yard." alt="" coords="45,5,123,32"/>
+</map>

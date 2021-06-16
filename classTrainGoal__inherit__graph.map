@@ -1,0 +1,5 @@
+<map id="TrainGoal" name="TrainGoal">
+<area shape="rect" id="node1" title="The abstract base class for the Incoming and Outgoing classes." alt="" coords="59,5,141,32"/>
+<area shape="rect" id="node2" href="$classIncoming.html" title="Describes a future Incoming ShuntingUnit." alt="" coords="5,80,88,107"/>
+<area shape="rect" id="node3" href="$classOutgoing.html" title="Describes a future Outgoing ShuntingUnit." alt="" coords="113,80,194,107"/>
+</map>

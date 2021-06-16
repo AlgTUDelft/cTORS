@@ -1,0 +1,4 @@
+<map id="in_correct_time_rule" name="in_correct_time_rule">
+<area shape="rect" id="node1" title="Rule that verifies that shunting units that are arriving, arrive at the correct time." alt="" coords="5,80,160,107"/>
+<area shape="rect" id="node2" href="$classBusinessRule.html" title="Abstract base class for all the business rules." alt="" coords="28,5,137,32"/>
+</map>

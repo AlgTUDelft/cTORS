@@ -1,0 +1,4 @@
+<map id="Split" name="Split">
+<area shape="rect" id="node1" title="The Split action splits a ShuntingUnit into two separate ShuntingUnits based on the splitIndex." alt="" coords="34,80,85,107"/>
+<area shape="rect" id="node2" href="$classSimpleAction.html" title="The abstract base class for simple action descriptions." alt="" coords="5,5,113,32"/>
+</map>

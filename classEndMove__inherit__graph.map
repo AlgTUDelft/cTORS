@@ -1,0 +1,4 @@
+<map id="EndMove" name="EndMove">
+<area shape="rect" id="node1" title="The EndMove action changes the state of a ShuntingUnit to not moving." alt="" coords="18,80,101,107"/>
+<area shape="rect" id="node2" href="$classSimpleAction.html" title="The abstract base class for simple action descriptions." alt="" coords="5,5,113,32"/>
+</map>

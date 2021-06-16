@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" title=" " alt="" coords="5,132,92,159"/>
+<area shape="rect" id="node2" href="$classInvalidActionException.html" title="Raise this exception when trying to apply an invalid Action." alt="" coords="151,5,321,32"/>
+<area shape="rect" id="node3" href="$classInvalidConfigException.html" title="Raise this exception when the specified Config file is invalid." alt="" coords="151,56,321,83"/>
+<area shape="rect" id="node4" href="$classInvalidLocationException.html" title="Raise this exception when the specified Location file is invalid." alt="" coords="143,107,329,133"/>
+<area shape="rect" id="node5" href="$classInvalidScenarioException.html" title="Raise this exception when the specified Scenario file is invalid." alt="" coords="143,157,329,184"/>
+<area shape="rect" id="node6" href="$classNonExistingPathException.html" title="Raise this exception when trying to find a non&#45;existing Path in the shunting yard." alt="" coords="140,208,332,235"/>
+<area shape="rect" id="node7" href="$classScenarioFailedException.html" title="Raise this exception when a TORS session ends in an invalid, or finished but unsolved State." alt="" coords="146,259,326,285"/>
+</map>

@@ -1,0 +1,13 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classAction.html" title="The abstract base class for action descriptions." alt="" coords="5,233,68,260"/>
+<area shape="rect" id="node2" href="$classArriveAction.html" title="The ArriveAction lets a scheduled ShuntingUnit arrive on the shunting yard." alt="" coords="133,5,235,32"/>
+<area shape="rect" id="node3" href="$classBeginMoveAction.html" title="The BeginMoveAction changes the state of a ShuntingUnit to moving." alt="" coords="116,56,252,83"/>
+<area shape="rect" id="node4" href="$classCombineAction.html" title="The CombineAction combines two ShuntingUnits into one ShuntingUnit." alt="" coords="123,107,245,133"/>
+<area shape="rect" id="node5" href="$classEndMoveAction.html" title="The EndMoveAction changes the state of a ShuntingUnit to not moving." alt="" coords="123,157,245,184"/>
+<area shape="rect" id="node6" href="$classExitAction.html" title="The ExitAction lets a scheduled ShuntingUnit depart from the shunting yard." alt="" coords="140,208,228,235"/>
+<area shape="rect" id="node7" href="$classMoveAction.html" title="The MoveAction moves a ShuntingUnit from one Track to a neighboring Railroad Track." alt="" coords="135,259,233,285"/>
+<area shape="rect" id="node8" href="$classServiceAction.html" title="The ServiceAction executes a task on the specified train." alt="" coords="129,309,239,336"/>
+<area shape="rect" id="node9" href="$classSetbackAction.html" title="The SetbackAction changes the direction of the ShuntingUnit." alt="" coords="127,360,241,387"/>
+<area shape="rect" id="node10" href="$classSplitAction.html" title="The SplitAction splits a ShuntingUnit into two separate ShuntingUnits." alt="" coords="138,411,230,437"/>
+<area shape="rect" id="node11" href="$classWaitAction.html" title="The WaitAction instructs this ShuntingUnit to wait until the next Event." alt="" coords="138,461,230,488"/>
+</map>

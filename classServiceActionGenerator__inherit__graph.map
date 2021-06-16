@@ -1,0 +1,4 @@
+<map id="ServiceActionGenerator" name="ServiceActionGenerator">
+<area shape="rect" id="node1" title="The ServiceActionGenerator generates ServiceActions." alt="" coords="5,80,181,107"/>
+<area shape="rect" id="node2" href="$classActionGenerator.html" title="An abstract base class for the ActionGenerators." alt="" coords="29,5,157,32"/>
+</map>

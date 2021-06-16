@@ -1,0 +1,4 @@
+<map id="Wait" name="Wait">
+<area shape="rect" id="node1" title="The Wait action instructs this ShuntingUnit to wait until the next Event." alt="" coords="34,80,85,107"/>
+<area shape="rect" id="node2" href="$classSimpleAction.html" title="The abstract base class for simple action descriptions." alt="" coords="5,5,113,32"/>
+</map>

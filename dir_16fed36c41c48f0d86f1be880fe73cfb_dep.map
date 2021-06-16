@@ -1,0 +1,19 @@
+<map id="src/rules" name="src/rules">
+<area shape="rect" id="node2" href="dir_63bc785497a33384a4b5ca20bb93c3da.html" title="arrival_departure" alt="" coords="794,63,929,111"/>
+<area shape="rect" id="node9" href="dir_d44c64559bbebec7f509842c48db8b23.html" title="include" alt="" coords="433,159,505,207"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000007_000000.html" title="5" alt="" coords="519,180,529,194"/>
+<area shape="rect" id="node3" href="dir_0dbb96b733bbab3660e28c96ef56d53b.html" title="combine_and_split" alt="" coords="625,63,769,111"/>
+<area shape="rect" id="edge3-headlabel" href="dir_000008_000000.html" title="3" alt="" coords="521,166,530,181"/>
+<area shape="rect" id="node4" href="dir_cd2d16cc53a8e3d6c1ea8ab87d35c395.html" title="facility" alt="" coords="529,63,601,111"/>
+<area shape="rect" id="edge6-headlabel" href="dir_000009_000000.html" title="3" alt="" coords="507,145,516,159"/>
+<area shape="rect" id="node5" href="dir_9aa38be7498d8a3875902f93b54fcd97.html" title="parking" alt="" coords="433,63,505,111"/>
+<area shape="rect" id="edge2-headlabel" href="dir_000010_000000.html" title="3" alt="" coords="473,133,482,148"/>
+<area shape="rect" id="node6" href="dir_6324993f1d7881fed1bb9beff3383610.html" title="service_tasks" alt="" coords="298,63,409,111"/>
+<area shape="rect" id="edge4-headlabel" href="dir_000011_000000.html" title="4" alt="" coords="427,133,437,148"/>
+<area shape="rect" id="node7" href="dir_0c8c21500b80ed0a7a2c9f84629f6835.html" title="shunting" alt="" coords="195,63,274,111"/>
+<area shape="rect" id="edge7-headlabel" href="dir_000012_000000.html" title="3" alt="" coords="412,158,422,172"/>
+<area shape="rect" id="node8" href="dir_24abd28ad358956f40ab3aee65a762bd.html" title="track_occupation" alt="" coords="37,63,171,111"/>
+<area shape="rect" id="edge5-headlabel" href="dir_000013_000000.html" title="4" alt="" coords="411,162,421,176"/>
+<area shape="rect" id="clust2" href="dir_16fed36c41c48f0d86f1be880fe73cfb.html" alt="" coords="27,52,1036,121"/>
+<area shape="rect" id="clust1" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html" title="src" alt="" coords="16,16,1047,132"/>
+</map>

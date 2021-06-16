@@ -1,0 +1,5 @@
+<map id="EndMoveActionGenerator" name="EndMoveActionGenerator">
+<area shape="rect" id="node1" title="The EndMoveActionGenerator generates EndMoveActions." alt="" coords="5,171,193,197"/>
+<area shape="rect" id="node2" href="$classActionGenerator.html" title="An abstract base class for the ActionGenerators." alt="" coords="35,95,163,121"/>
+<area shape="rect" id="node3" href="$classLocation.html" title="A Location describes a shunting yard." alt="" coords="61,5,138,32"/>
+</map>

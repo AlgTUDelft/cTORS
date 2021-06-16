@@ -1,0 +1,4 @@
+<map id="WaitActionGenerator" name="WaitActionGenerator">
+<area shape="rect" id="node1" title="The WaitActionGenerator generates WaitActions." alt="" coords="5,80,163,107"/>
+<area shape="rect" id="node2" href="$classActionGenerator.html" title="An abstract base class for the ActionGenerators." alt="" coords="20,5,148,32"/>
+</map>

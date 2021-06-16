@@ -1,0 +1,5 @@
+<map id="EndMoveAction" name="EndMoveAction">
+<area shape="rect" id="node1" title="The EndMoveAction changes the state of a ShuntingUnit to not moving." alt="" coords="5,171,128,197"/>
+<area shape="rect" id="node2" href="$classAction.html" title="The abstract base class for action descriptions." alt="" coords="35,95,98,121"/>
+<area shape="rect" id="node3" href="$classShuntingUnit.html" title="A ShuntingUnit describes connected Trains that are shunted as one unit." alt="" coords="13,5,120,32"/>
+</map>

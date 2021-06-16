@@ -1,0 +1,4 @@
+<map id="MultiMove" name="MultiMove">
+<area shape="rect" id="node1" title="The MultiMove action moves a ShuntingUnit from one Track to another Railroad Track." alt="" coords="14,80,105,107"/>
+<area shape="rect" id="node2" href="$classSimpleAction.html" title="The abstract base class for simple action descriptions." alt="" coords="5,5,113,32"/>
+</map>

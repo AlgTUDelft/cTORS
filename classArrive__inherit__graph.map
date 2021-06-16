@@ -1,0 +1,4 @@
+<map id="Arrive" name="Arrive">
+<area shape="rect" id="node1" title="The Arrive action lets a scheduled ShuntingUnit arrive on the shunting yard." alt="" coords="29,80,90,107"/>
+<area shape="rect" id="node2" href="$classSimpleAction.html" title="The abstract base class for simple action descriptions." alt="" coords="5,5,113,32"/>
+</map>

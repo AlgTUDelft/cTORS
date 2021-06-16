@@ -1,0 +1,4 @@
+<map id="Service" name="Service">
+<area shape="rect" id="node1" title="The Service action executes a task on the specified train." alt="" coords="24,80,95,107"/>
+<area shape="rect" id="node2" href="$classSimpleAction.html" title="The abstract base class for simple action descriptions." alt="" coords="5,5,113,32"/>
+</map>

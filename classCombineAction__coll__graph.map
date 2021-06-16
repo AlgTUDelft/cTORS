@@ -1,0 +1,5 @@
+<map id="CombineAction" name="CombineAction">
+<area shape="rect" id="node1" title="The CombineAction combines two ShuntingUnits into one ShuntingUnit." alt="" coords="5,171,127,197"/>
+<area shape="rect" id="node2" href="$classAction.html" title="The abstract base class for action descriptions." alt="" coords="35,95,97,121"/>
+<area shape="rect" id="node3" href="$classShuntingUnit.html" title="A ShuntingUnit describes connected Trains that are shunted as one unit." alt="" coords="13,5,119,32"/>
+</map>

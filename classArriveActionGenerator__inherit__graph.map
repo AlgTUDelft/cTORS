@@ -1,0 +1,4 @@
+<map id="ArriveActionGenerator" name="ArriveActionGenerator">
+<area shape="rect" id="node1" title="The ArriveActionGenerator generates ArriveActions." alt="" coords="5,80,172,107"/>
+<area shape="rect" id="node2" href="$classActionGenerator.html" title="An abstract base class for the ActionGenerators." alt="" coords="25,5,153,32"/>
+</map>

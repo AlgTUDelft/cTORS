@@ -1,0 +1,4 @@
+<map id="ExitAction" name="ExitAction">
+<area shape="rect" id="node1" title="The ExitAction lets a scheduled ShuntingUnit depart from the shunting yard." alt="" coords="5,80,93,107"/>
+<area shape="rect" id="node2" href="$classAction.html" title="The abstract base class for action descriptions." alt="" coords="18,5,81,32"/>
+</map>

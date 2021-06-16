@@ -1,0 +1,4 @@
+<map id="Combine" name="Combine">
+<area shape="rect" id="node1" title="The Combine action combines two ShuntingUnits into one ShuntingUnit." alt="" coords="19,80,99,107"/>
+<area shape="rect" id="node2" href="$classSimpleAction.html" title="The abstract base class for simple action descriptions." alt="" coords="5,5,113,32"/>
+</map>

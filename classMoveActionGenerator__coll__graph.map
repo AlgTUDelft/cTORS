@@ -1,0 +1,5 @@
+<map id="MoveActionGenerator" name="MoveActionGenerator">
+<area shape="rect" id="node1" title="The MoveActionGenerator generates MoveActions." alt="" coords="5,171,169,197"/>
+<area shape="rect" id="node2" href="$classActionGenerator.html" title="An abstract base class for the ActionGenerators." alt="" coords="23,95,151,121"/>
+<area shape="rect" id="node3" href="$classLocation.html" title="A Location describes a shunting yard." alt="" coords="49,5,126,32"/>
+</map>

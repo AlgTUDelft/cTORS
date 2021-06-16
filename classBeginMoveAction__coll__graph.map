@@ -1,0 +1,5 @@
+<map id="BeginMoveAction" name="BeginMoveAction">
+<area shape="rect" id="node1" title="The BeginMoveAction changes the state of a ShuntingUnit to moving." alt="" coords="5,171,141,197"/>
+<area shape="rect" id="node2" href="$classAction.html" title="The abstract base class for action descriptions." alt="" coords="42,95,105,121"/>
+<area shape="rect" id="node3" href="$classShuntingUnit.html" title="A ShuntingUnit describes connected Trains that are shunted as one unit." alt="" coords="20,5,127,32"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="Move" name="Move">
+<area shape="rect" id="node1" title="The Move action moves a ShuntingUnit from one Track to a neighboring Railroad Track." alt="" coords="30,80,89,107"/>
+<area shape="rect" id="node2" href="$classSimpleAction.html" title="The abstract base class for simple action descriptions." alt="" coords="5,5,113,32"/>
+</map>
