@@ -1,6 +1,8 @@
 # Treinonderhoud- en -rangeersimulator (TORS)
 This implementation of TORS consists of a backend written in C++ (cTORS), and a front-end written in python (TORS).
 
+Full documentation can be found at [algtudelft.github.io/cTORS](https://algtudelft.github.io/cTORS/).
+
 ## Project setup
 The basic project setup uses the structure provided by cmake. The subfolders are subprojects:
 * cTORS: The c++ implementation of TORS
