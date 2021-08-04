@@ -24,8 +24,9 @@ const string ExitAction::toString() const {
 
 const Action* ExitActionGenerator::Generate(const State* state, const SimpleAction& action) const {
 	auto exit = static_cast<const Exit*>(&action);
-	auto su = state->GetShuntingUnitByTrainIDs(action.GetTrainIDs());
+	auto su = InitialCheck(state, action);
 	auto out = state->GetOutgoingByID(exit->GetOutgoingID());
+	if(out == nullptr) throw InvalidActionException("There is no outgoing train with ID " + to_string(exit->GetOutgoingID()));
 	return new ExitAction(su, 0, out);
 }
 

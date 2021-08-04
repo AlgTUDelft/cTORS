@@ -1,36 +1,15 @@
 {
-	"planner": {
-		"comment1": "planner.random_planner.RandomPlanner",
-		"class": "planner.greedy_planner.GreedyPlanner",
-		"comment3": "planner.simple_rl_planner.SimpleRLPlanner",
-		"comment5": "planner.mapf_planner.MAPFPlanner",
-		"seed": 38,
-		"remote": false,
-		"time_limit": 10,
-		"verbose": 1
-	},
-		
-	"planner.simple_rl_planner.SimpleRLPlanner": {
-		"epsilon_decay": 0.99,
-		"gamma": 0.95,
-		"alpha": 0.1,
-		"buffer_size": 20000,
-		"file_format": "rl/simple_{}.hdf5",
-		"n_dense_layers": 4,
-		"dense1": 512,
-		"dense2": 256,
-		"dense3": 128,
-		"dense4": 64,
-		"dropout": 0.0,
-		"sample_size": 5000,
-		"n_epochs": 1,
-		"random_buffer": "rl/buffer.p"
-	},
+	"comment1": "planner.random_planner.RandomPlanner",
+	"class": "planner.greedy_planner.GreedyPlanner",
+	"comment2": "planner.rl_planner.RLPlanner",
+	"seed": 38,
+	"verbose": 1,
 	
-	"planner.mapf_planner.MAPFPlanner": {
-		"mapf_solver": "planner.mapf_algorithm_example.mapf_solver"
+	"planner.rl_planner.RLPlanner": {
+		"model_save": "ppo_tors",
+		"converter": {
+			"class": "rl.conv.TORSConverter"
+		}
 	}
-	
-
 }
 

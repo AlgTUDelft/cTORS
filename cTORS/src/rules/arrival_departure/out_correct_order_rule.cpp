@@ -1,12 +1,13 @@
 #include "BusinessRules.h"
 
-/*
-
-Rule that verifies that leaving shunting units have their train units in the 
-correct order when they leave the shunting yard.
-
-*/
-
+/**
+ * Validates an ExitAction for the given state. 
+ * The ExitAction is invalid if
+ * 1. The assigned ShuntingUnit does not match the demans of the ShuntingUnit in the Outgoing attribute.
+ * 
+ * See ShuntingUnit::MatchesShuntingUnit(const ShuntingUnit*) const
+ * @return A pair describing 1) whether the action is valid, and 2) if not, why
+ */
 pair<bool, string> out_correct_order_rule::IsValid(const State* state, const Action* action) const {
 	if (auto ea = dynamic_cast<const ExitAction*>(action)) {
 		if(!ea->GetOutgoing()->GetShuntingUnit()->MatchesShuntingUnit(ea->GetShuntingUnit()))

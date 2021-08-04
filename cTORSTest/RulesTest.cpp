@@ -11,13 +11,13 @@ namespace cTORSTest
 		b0==r0===s0==r1=======b1
 		           \=r2=============b2
 		*/
-		Track r0("r0", TrackPartType::Railroad, 100, "rail0", false, false, false, false);
-		Track r1("r1", TrackPartType::Railroad, 200, "rail1", false, false, true, false);
-		Track r2("r2", TrackPartType::Railroad, 300, "rail2", false, false, true, false);
-		Track s0("s0", TrackPartType::Switch, 50, "switch0", false, false, true, false);
-		Track b0("b0", TrackPartType::Bumper, 10, "bumper0", false, false, true, false);
-		Track b1("b1", TrackPartType::Bumper, 10, "bumper1", false, false, true, false);
-		Track b2("b2", TrackPartType::Bumper, 10, "bumper2", false, false, true, false);
+		Track r0("r0", TrackPartType::Railroad, 100, "rail0", false, false, false);
+		Track r1("r1", TrackPartType::Railroad, 200, "rail1", false, false, true);
+		Track r2("r2", TrackPartType::Railroad, 300, "rail2", false, false, true);
+		Track s0("s0", TrackPartType::Switch, 50, "switch0", false, false, true);
+		Track b0("b0", TrackPartType::Bumper, 10, "bumper0", false, false, true);
+		Track b1("b1", TrackPartType::Bumper, 10, "bumper1", false, false, true);
+		Track b2("b2", TrackPartType::Bumper, 10, "bumper2", false, false, true);
 		r0.AssignNeighbors({&b0}, {&s0});
 		r1.AssignNeighbors({&b1}, {&s0});
 		r2.AssignNeighbors({&b2}, {&s0});
@@ -43,8 +43,8 @@ namespace cTORSTest
 
 		vector<const Track*> elecMove = {&r1, &s0, &r0};
 		vector<const Track*> nonElecMove = {&r0, &s0, &r2};
-		MoveAction elecMoveAction(elecSU, elecMove);
-		MoveAction nonElecMoveAction(nonElecSU, nonElecMove);
+		MoveAction elecMoveAction(elecSU, elecMove, 0, false);
+		MoveAction nonElecMoveAction(nonElecSU, nonElecMove, 0, false);
 
 		Config config;
 		electric_move_rule emr(&config);

@@ -10,12 +10,19 @@ from actions import Actions
 from state import State
 from plan import Plan
 
-path_dir = os.path.dirname(__file__)
-#layout = "KleineBinckhorstVisualizer"
 layout = "Demo"
+scenario = "scenario.json"
+
+# layout = "KleineBinckhorstVisualizer"
+# scenario = "scenario.json"
+
+# layout = "shuffleboard"
+# scenario = "scenarios/INSTANCE_76685_0_feasible.json"
+
+path_dir = os.path.dirname(__file__)
 data_path = str(Path(path_dir).parent.parent) + "/data/" + layout + "/"
 vis_config_path = str(Path(path_dir).parent.parent) + "/data/" + layout + "/vis_config.json"
-
+scenario_path = os.path.join(data_path, scenario)
 
 def create_app() -> Flask:
     """
@@ -29,7 +36,8 @@ def create_app() -> Flask:
     # Create the tors instance
     with app.app_context():
         app.engine = Engine(data_path)
-        app.state = app.engine.start_session()
+        app.scenario = app.engine.get_scenario(scenario_path)
+        app.state = app.engine.start_session(app.scenario)
         app.result = None
         app.action_index = 0
         app.done = False

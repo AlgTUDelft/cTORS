@@ -1,11 +1,12 @@
 #include "BusinessRules.h"
 
-/*
-
-Rule that verifies that shunting units which need electricity park only on electrified tracks.
-
-*/
-
+/**
+ * Validates a MoveAction, ArriveAction or ExitAction for the given state. 
+ * The Action is invalid iff
+ * 1. The ShuntingUnit needs electrictiy.
+ * 2. And its destination Track is not electrified.
+ * @return A pair describing 1) whether the action is valid, and 2) if not, why
+ */
 pair<bool, string> electric_track_rule::IsValid(const State* state, const Action* action) const {
 	auto su = action->GetShuntingUnit();
 	if (!su->NeedsElectricity()) return make_pair(true, "");

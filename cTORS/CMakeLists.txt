@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.11)
 # set the project name
 project(cTORS VERSION 0.1)
 
+#Options
+option(BUILD_DOC "Build documentation" ON)
+
 # Verbose.
 #set(CMAKE_VERBOSE_MAKEFILE on)
 
@@ -26,6 +29,23 @@ else()
 	add_compile_definitions(DEBUG=1)
 endif()
 
+
+#Doxygen documentation generation (optional)
+if(BUILD_DOC)
+	find_package(Doxygen)
+	if (DOXYGEN_FOUND)
+	    message(STATUS "Doxygen build started")
+	    # note the option ALL which allows to build the docs together with the application
+	    add_custom_target( doc_doxygen ALL
+		COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		COMMENT "Generating API documentation with Doxygen"
+		VERBATIM )
+	else (DOXYGEN_FOUND)
+	  message(STATUS "Doxygen need to be installed to generate the doxygen documentation")
+	endif (DOXYGEN_FOUND)
+endif(BUILD_DOC)
+
 #Fetch the JSON library
 FetchContent_Declare(json
   GIT_REPOSITORY https://github.com/nlohmann/json.git
@@ -37,21 +57,42 @@ if(NOT json_POPULATED)
   add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
-find_package(Protobuf REQUIRED)
-
 # Headers
 set(PROJECT_SOURCE_DIR "src")
 set(PROJECT_INCLUDE_DIR "include")
 
+# Includes
+set(TORS_HEADER_FILES
+	${PROJECT_INCLUDE_DIR}/Action.h
+	${PROJECT_INCLUDE_DIR}/BusinessRules.h
+	${PROJECT_INCLUDE_DIR}/Config.h
+	${PROJECT_INCLUDE_DIR}/Disturbance.h
+	${PROJECT_INCLUDE_DIR}/Employee.h
+	${PROJECT_INCLUDE_DIR}/Engine.h
+	${PROJECT_INCLUDE_DIR}/Event.h
+	${PROJECT_INCLUDE_DIR}/Exceptions.h
+	${PROJECT_INCLUDE_DIR}/Facility.h
+	${PROJECT_INCLUDE_DIR}/Location.h
+	${PROJECT_INCLUDE_DIR}/Plan.h
+	${PROJECT_INCLUDE_DIR}/Proto.h
+	${PROJECT_INCLUDE_DIR}/Scenario.h
+	${PROJECT_INCLUDE_DIR}/ShuntingUnit.h
+	${PROJECT_INCLUDE_DIR}/State.h
+	${PROJECT_INCLUDE_DIR}/Track.h
+	${PROJECT_INCLUDE_DIR}/TrainGoals.h
+	${PROJECT_INCLUDE_DIR}/Train.h
+	${PROJECT_INCLUDE_DIR}/Utils.h
+)
+
 set(TORS_SOURCE_FILES
 	${PROJECT_SOURCE_DIR}/action/Action.cpp
 	${PROJECT_SOURCE_DIR}/action/ActionManager.cpp
-	${PROJECT_SOURCE_DIR}/action/ActionValidator.cpp
 	${PROJECT_SOURCE_DIR}/action/ArriveAction.cpp
 	${PROJECT_SOURCE_DIR}/action/BeginMoveAction.cpp
 	${PROJECT_SOURCE_DIR}/action/EndMoveAction.cpp
 	${PROJECT_SOURCE_DIR}/action/ExitAction.cpp
 	${PROJECT_SOURCE_DIR}/action/MoveAction.cpp
+	${PROJECT_SOURCE_DIR}/action/MoveHelper.cpp
 	${PROJECT_SOURCE_DIR}/action/ServiceAction.cpp
 	${PROJECT_SOURCE_DIR}/action/SetbackAction.cpp
 	${PROJECT_SOURCE_DIR}/action/SplitAction.cpp
@@ -106,30 +147,11 @@ set(TORS_SOURCE_FILES
 	
 	${PROJECT_SOURCE_DIR}/main.cpp
 
-	# Includes
-	${PROJECT_INCLUDE_DIR}/Action.h
-	${PROJECT_INCLUDE_DIR}/BusinessRules.h
-	${PROJECT_INCLUDE_DIR}/Config.h
-	${PROJECT_INCLUDE_DIR}/Disturbance.h
-	${PROJECT_INCLUDE_DIR}/Employee.h
-	${PROJECT_INCLUDE_DIR}/Engine.h
-	${PROJECT_INCLUDE_DIR}/Event.h
-	${PROJECT_INCLUDE_DIR}/Exceptions.h
-	${PROJECT_INCLUDE_DIR}/Facility.h
-	${PROJECT_INCLUDE_DIR}/Location.h
-	${PROJECT_INCLUDE_DIR}/Plan.h
-	${PROJECT_INCLUDE_DIR}/Proto.h
-	${PROJECT_INCLUDE_DIR}/Scenario.h
-	${PROJECT_INCLUDE_DIR}/ShuntingUnit.h
-	${PROJECT_INCLUDE_DIR}/State.h
-	${PROJECT_INCLUDE_DIR}/Track.h
-	${PROJECT_INCLUDE_DIR}/TrainGoals.h
-	${PROJECT_INCLUDE_DIR}/Train.h
-	${PROJECT_INCLUDE_DIR}/Utils.h
+	${TORS_HEADER_FILES}
 )
 
-#include_directories(${PROTOBUF_INCLUDE_DIRS})
-#include_directories(${CMAKE_CURRENT_BINARY_DIR})
+#Protobuf
+find_package(Protobuf REQUIRED)
 set(PROTOS_DIR "../protos")
 set(PROTOBUF_IMPORT_DIRS ${PROTOS_DIR})
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS
@@ -138,11 +160,25 @@ protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS
 	${PROTOS_DIR}/Location.proto
 	${PROTOS_DIR}/TrainUnitTypes.proto
 	${PROTOS_DIR}/Scenario.proto
-	
+
 	${PROTOS_DIR}/PartialOrderSchedule.proto
 	${PROTOS_DIR}/Run.proto
 	${PROTOS_DIR}/Plan.proto
 )
+
+#python make docs
+set(Python3_FIND_STRATEGY LOCATION)
+set(Python3_FIND_VIRTUALENV ONLY)
+find_package(Python3 COMPONENTS Interpreter)
+if (Python3_Interpreter_FOUND)
+	execute_process(COMMAND ${Python3_EXECUTABLE} -m pybind11_mkdoc -o ../pyTORS/docstrings.h ${TORS_HEADER_FILES} -I ${CMAKE_CURRENT_BINARY_DIR}
+    	WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR} RESULT_VARIABLE py_mkdoc_result)
+	if(${py_mkdoc_result})
+		message(STATUS "pybind11_mkdoc failed")
+	else()
+		message(STATUS "pybind11 documentation succesfully generated")
+	endif()
+endif()
 
 add_library(cTORS SHARED ${PROTO_SRCS} ${PROTO_HDRS} ${TORS_SOURCE_FILES} )
 

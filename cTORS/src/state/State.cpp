@@ -48,19 +48,19 @@ const Event* State::PopEvent()
 }
 
 void State::AddEvent(const Incoming *in) {
-	Event* event = new Event(in->GetTime(), nullptr, EventType::IncomingTrain);
+	Event* event = new Event(in);
 	events.push(event);
 	debug_out("Push event " << event->toString() << " at T=" << to_string(event->GetTime()));
 }
 
 void State::AddEvent(const Outgoing *out) {
-	Event* event = new Event(out->GetTime(), nullptr, EventType::OutgoingTrain);
+	Event* event = new Event(out);
 	events.push(event);
 	debug_out("Push event " << event->toString() << " at T=" << to_string(event->GetTime()));
 }
 
 void State::AddEvent(const Action* action) {
-	Event* event = new Event(time + action->GetDuration(), action, EventType::ActionFinish);
+	Event* event = new Event(time + action->GetDuration(), action);
 	events.push(event);
 	debug_out("Push event " << event->toString() << " at T=" << to_string(event->GetTime()));
 }
@@ -68,14 +68,22 @@ void State::AddEvent(const Action* action) {
 void State::StartAction(const Action* action) {
 	if (action == nullptr) return;
 	changed = true;
-	action->Start(this);
+	try {
+		action->Start(this);
+	} catch(const exception& e) {
+		throw InvalidActionException("Exception in starting action.", e);
+	}
 	AddEvent(action);
 }
 
 void State::FinishAction(const Action* action) {
 	if (action == nullptr) return;
 	changed = true;
-	action->Finish(this);
+	try {
+		action->Finish(this);
+	} catch(const exception& e) {
+		throw InvalidActionException("Exception in finishing action.", e);
+	}
 }
 
 const ShuntingUnit* State::AddShuntingUnitToState(const ShuntingUnit* su, const Track* track, const Track* previous, const Train* frontTrain) {
@@ -184,8 +192,16 @@ void State::RemoveShuntingUnit(const ShuntingUnit* su) {
 }
 
 bool State::HasShuntingUnit(const ShuntingUnit* su) const {
-	auto it2 = find_if(shuntingUnits.begin(), shuntingUnits.end(), [su](const ShuntingUnit* s) -> bool { return *su == *s; });
+	auto it2 = find_if(shuntingUnits.begin(), shuntingUnits.end(), [su](const ShuntingUnit* s) -> bool 
+		{ return *su == *s && su->MatchesShuntingUnit(s); });
 	return (it2 != shuntingUnits.end());
+}
+
+const ShuntingUnit* State::GetShuntingUnitByID(int id) const {
+	auto it = find_if(shuntingUnits.begin(), shuntingUnits.end(), [id](const ShuntingUnit* s) -> bool 
+		{ return s->GetID() == id; });
+	if(it == shuntingUnits.end()) return nullptr;
+	return *it;
 }
 
 const ShuntingUnit* State::GetMatchingShuntingUnit(const ShuntingUnit* su) const {
@@ -211,12 +227,22 @@ bool State::IsAnyInactive() const {
 	return false;
 }
 
-void State::RemoveActiveAction(const ShuntingUnit* su, const Action* action) {
-	auto& lst = shuntingUnitStates.at(su).activeActions;
-	auto it = find_if(lst.begin(), lst.end(), [action](const Action* a) -> bool { return *a == *action; } );
-	if (it != lst.end()) {
-		lst.erase(it);
+bool State::IsActionRequired() const {
+	if(IsAnyInactive()) return true;
+	for(auto inc: incomingTrains) {
+		if(inc->GetTime() == GetTime()) return true;
 	}
+	return false;
+}
+
+void State::RemoveActiveAction(const ShuntingUnit* su, const Action* action) {
+	ce(
+		auto& lst = shuntingUnitStates.at(su).activeActions;
+		auto it = find_if(lst.begin(), lst.end(), [action](const Action* a) -> bool { return *a == *action; } );
+		if (it != lst.end()) {
+			lst.erase(it);
+		}
+	)
 }
 
 void State::AddTasksToTrains(const unordered_map<const Train*, vector<Task>, TrainHash, TrainEquals>& tasks) {
@@ -228,17 +254,21 @@ void State::AddTasksToTrains(const unordered_map<const Train*, vector<Task>, Tra
 }
 
 void State::RemoveTaskFromTrain(const Train* tu, const Task& task) {
-	auto& lst = trainStates.at(tu).tasks;
-	auto it = find(lst.begin(), lst.end(), task);
-	if (it != lst.end())
-		lst.erase(it);
+	ce(
+		auto& lst = trainStates.at(tu).tasks;
+		auto it = find(lst.begin(), lst.end(), task);
+		if (it != lst.end())
+			lst.erase(it);
+	)
 }
 
-void State::RemoveActiveTaskFromTrain(const Train* tu, const Task* task) {
-	auto& lst = trainStates.at(tu).activeTasks;
-	auto it = find(lst.begin(), lst.end(), task);
-	if (it != lst.end())
-		lst.erase(it);
+void State::RemoveActiveTaskFromTrain(const Train* tu, const Task& task) {
+	ce(
+		auto& lst = trainStates.at(tu).activeTasks;
+		auto it = find(lst.begin(), lst.end(), task);
+		if (it != lst.end())
+			lst.erase(it);
+	)
 }
 
 const vector<const Track*> State::GetReservedTracks() const {
@@ -264,13 +294,15 @@ bool State::CanMoveToSide(const ShuntingUnit* su, const Track* side) const {
 }
 
 const vector<Train> State::GetTrainUnitsInOrder(const ShuntingUnit* su) const {
-	auto& trains = su->GetTrains();
-	auto suState = GetShuntingUnitState(su);
-	bool frontFirst = *suState.frontTrain == trains.front();
-	if ((suState.previous == nullptr || suState.position->IsASide(suState.previous)) && frontFirst)
-		return trains;
-	vector<Train>reverse (trains.rbegin(), trains.rend());
-	return reverse;
+	ce(
+		auto& trains = su->GetTrains();
+		auto& suState = GetShuntingUnitState(su);
+		bool frontFirst = *suState.frontTrain == trains.front();
+		if(frontFirst)
+			return trains;
+		vector<Train> reverse (trains.rbegin(), trains.rend());
+		return reverse;
+	)
 }
 
 void State::SwitchFrontTrain(const ShuntingUnit* su) {
@@ -290,7 +322,11 @@ const ShuntingUnit* State::GetShuntingUnitByTrainIDs(const vector<int>& ids) con
 		su = current;
 	}
 	#endif
-	return GetShuntingUnitByTrainID(ids.at(0));
+	try {
+		return GetShuntingUnitByTrainID(ids.at(0));
+	} catch (exception& e) {
+		return nullptr;
+	}
 }
 
 const Incoming* State::GetIncomingByID(int id) const {
@@ -305,4 +341,103 @@ const Outgoing* State::GetOutgoingByID(int id) const {
 		[id](const Outgoing* out) -> bool { return out->GetID() == id;});
 	if(it==outgoingTrains.end()) return nullptr;
 	return *it;
+}
+
+void State::PrintStateInfo() const {
+	cout << "|---------------------------|" << endl;
+	cout << "|   State at T" << setw(6) << left << GetTime() << "        |" << endl;
+	cout << "|---------------------------|" << endl;
+	if(GetShuntingUnits().size() == 0)
+		cout << "No shunting units on the yard." << endl;
+	for(auto& [su, suState]: GetShuntingUnitStates()) {
+		cout << su << ": " << endl
+			<< "\twaiting\t\t=\t" << suState.waiting << endl
+			<< "\tmoving\t\t=\t" << suState.moving << endl
+			<< "\tbegin moving\t=\t" << suState.beginMoving << endl
+			<< "\tin neutral\t=\t" << suState.inNeutral << endl
+			<< "\tfront train\t=\t" << suState.frontTrain << endl
+			<< "\tposition\t=\t" << suState.position << endl
+			<< "\tprevious\t=\t" << suState.previous << endl
+			<< "\tactive actions\t=\t" << (suState.activeActions.size() == 0 ? "None" : Join(suState.activeActions.begin(), suState.activeActions.end(), ", ")) << endl;
+		for(auto& train: su->GetTrains()) {
+			cout << "\t> " << train;
+			auto& tasks = GetTasksForTrain(&train);
+			auto& activeTasks = GetActiveTasksForTrain(&train);
+			if(tasks.size() + activeTasks.size() > 0) cout << ": ";
+			else cout << ": no tasks.";
+			if(tasks.size() > 0) cout << "Tasks: " << Join(tasks,", ");
+			if(tasks.size() > 0 && activeTasks.size() > 0) cout << " / ";
+			if(activeTasks.size() > 0) cout << "Active: " << Join(activeTasks, ", ") << endl;
+			cout << endl;
+		}
+	}
+	if(shuntingUnits.size() > 0)
+		cout << endl << "Track occupations:" << endl;
+	for(auto& [track, trackState]: trackStates) {
+		if(trackState.reserved || trackState.occupations.size() > 0) {
+			cout << "\t" << track;
+			if(trackState.reserved) cout << " (reserved) \t|";
+			else cout << "            \t|";
+			if(trackState.occupations.size() > 0) {
+				//A < --- suB ( T3 - T2> ) - suA ( T1> ) ---- > B
+				cout << "  A <--";
+				for(auto su: trackState.occupations) {
+					cout << " SU-" << su->GetID() << " ( ";
+					auto trains = GetTrainUnitsInOrder(su);
+					bool direction = track->IsASide(GetPrevious(su));
+					auto frontTrain = GetFrontTrain(su);
+					if(!direction)
+						trains = vector<Train>(trains.rbegin(), trains.rend());
+					for(size_t i=trains.size(); i--; ) {
+						if(i == trains.size()-1 && trains[i] == *frontTrain && !direction)
+							cout << "<";
+						cout << trains[i].GetID();
+						if(i == 0 && trains[i] == *frontTrain && direction)
+							cout << ">";
+						if(i>0) cout << " - ";
+					}
+					cout << " ) -";
+				}
+				cout << "-> B";
+			}
+			cout << endl;
+		}
+	}
+	cout << endl;
+	if(GetNumberOfEvents() == 0)
+		cout << "No events in the Event Queue" << endl;
+	else {
+		auto evt = PeekEvent();
+		cout << "Next event at T" << evt->GetTime() << ": " << evt << endl;
+		cout << GetNumberOfEvents() << " remaining events." << endl;
+	}
+	cout << endl;
+
+	if(incomingTrains.size() == 0)
+		cout << "No arrivals" << endl << endl;
+	else {
+		cout << "Arrivals:" << endl;
+		for(auto inc: incomingTrains) {
+			cout << "\tT" << inc->GetTime() << ": \t" << inc->GetShuntingUnit() << " (" << inc->GetShuntingUnit()->GetTrainString() << ") at " 
+				<< inc->GetParkingTrack() << " from " << inc->GetSideTrack();
+			if(inc->IsInstanding())
+				cout << " (instanding)";
+			cout << endl;
+		}
+		cout << endl;
+	}
+
+	if(outgoingTrains.size() == 0)
+		cout << "No departures" << endl << endl;
+	else {
+		cout << "Departures:" << endl;
+		for(auto out: outgoingTrains) {
+			cout << "\tT" << out->GetTime() << ": \t" << out->GetShuntingUnit() << " (" << out->GetShuntingUnit()->GetTrainString() << ") at " 
+				<< out->GetParkingTrack() << " to " << out->GetSideTrack();
+			if(out->IsInstanding())
+				cout << " (outstanding)";
+			cout << endl;
+		}
+		cout << endl;
+	}
 }

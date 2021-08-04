@@ -6,12 +6,12 @@ from rl.policy import ACPwithInvalidActions
 
 use_save = True
 
-data_folder = "episode.json" 
 tensorboard_log = "./log_tensorboard/"
 model_save = 'ppo_tors'
 
-config = Config.load_from_file(data_folder, "episode")
-env = TORSEnv(config)
+e_config = Config.load_from_file("episode.json", "episode")
+a_config = Config.load_from_file("agent.json", "agent")
+env = TORSEnv(e_config, a_config)
 env = Monitor(env, tensorboard_log)
 if not use_save:
   model = PPO(ACPwithInvalidActions, env, verbose=1, tensorboard_log=tensorboard_log)

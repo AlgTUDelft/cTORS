@@ -2,14 +2,15 @@ from flask_restful import Resource
 from flask import request, Response, current_app
 import json
 
-from pyTORS import ScenarioFailedError, ArriveAction, ExitAction, BeginMoveAction, EndMoveAction,\
-    SplitAction, CombineAction, WaitAction, ServiceAction, MoveAction
+from pyTORS import ScenarioFailedError, Wait, ServiceAction
 
 def get_valid_actions():
     if not current_app.result is None:
         actions = current_app.result.plan.get_actions()
         if current_app.action_index < len(actions):
             a = actions[current_app.action_index]  
+            if a.suggested_start > current_app.state.time:
+                current_app.engine.apply_wait_all_until(current_app.state, a.suggested_start)
             _a = current_app.engine.generate_action(current_app.state, a.action)
             return [_a]
         return []
@@ -76,9 +77,8 @@ class Actions(Resource):
             return Response("Invalid action id", status=400)
         action = valid_actions[action_id]
         
-        current_app.engine.apply_action(current_app.state, action)
         try:
-            current_app.engine.step(current_app.state)
+            current_app.engine.apply_action_and_step(current_app.state, action)
         except ScenarioFailedError as e:
             current_app.done = True
             current_app.message = "Scenario failed! " + str(e) 

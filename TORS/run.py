@@ -1,4 +1,4 @@
-from manager.c_manager import Manager
+from manager.manager import Manager
 from manager.config import Config
 import time
 import argparse

@@ -8,7 +8,7 @@ using namespace std;
 
 const string Location::locationFileString = "location.json";
 
-Location::Location(const string &folderName) {
+Location::Location(const string &folderName, bool byType) : byType(byType) {
 	path = folderName;
 	try {
 		PBLocation pb_location;
@@ -25,7 +25,8 @@ Location::Location(const string &folderName) {
 		moveDuration[TrackPartType::HalfEnglishSwitch] = 2 * movementSwitchCoefficient;
 		moveDuration[TrackPartType::InterSection] = 0;
 		moveDuration[TrackPartType::Bumper] = 0;
-		CalcNeighboringPaths(true); // TODO read parameter from config file
+		CalcNeighboringPaths(); 
+		CalcAllPossiblePaths();
 	}
 	catch (exception& e) {
 		cout << "Error in loading location: " << e.what() << "\n";
@@ -47,6 +48,22 @@ const Facility* Location::GetFacilityByID(int id) const {
 	return it == facilities.end() ? nullptr : *it;
 }
 
+
+int Location::GetDistance(const list<const Track*>& tracks) const {
+	return GetDistance(vector<const Track*>(tracks.begin(), tracks.end()));
+}
+
+int Location::GetDistance(const vector<const Track*>& tracks) const {
+	int length = 0;
+	const Track* prev = nullptr;
+	for(auto t: tracks) {
+		if(byType) length += GetDurationByType(t);
+		else if(prev != nullptr) length += GetDistance(prev, t);
+		prev = t;
+	}
+	return length;
+}
+
 list<Position> GetAllPositions(const vector<Track*>& tracks) {
 	list<Position> positions;
 	for(auto track: tracks) {
@@ -58,7 +75,7 @@ list<Position> GetAllPositions(const vector<Track*>& tracks) {
 	return positions;
 }
 
-void Location::CalcNeighboringPaths(bool byType) {
+void Location::CalcNeighboringPaths() {
 	if(neighborPaths.size() > 0) return;
 	auto positions = GetAllPositions(tracks);
 	for(auto& pos: positions) {
@@ -91,10 +108,9 @@ void Location::CalcNeighboringPaths(bool byType) {
 
 /**
  * Calculate the shortest paths.
- * Param byType: whether the basic distance is based on track type, or on the distance matrix
  * Param type: The train type for which the shortest paths are calculated. 
  */
-void Location::CalcShortestPaths(bool byType, const TrainUnitType* type) {
+void Location::CalcShortestPaths(const TrainUnitType* type) {
 	auto setbackTime = type->setbackTime;
 	auto& shortestPath = this->shortestPath[setbackTime];
 	if(shortestPath.size() > 0) return;
@@ -109,7 +125,7 @@ void Location::CalcShortestPaths(bool byType, const TrainUnitType* type) {
 		}
 	}
 	//Initialize all railroad to railroad distances
-	CalcNeighboringPaths(byType);
+	CalcNeighboringPaths();
 	for(auto& [pos, paths]: neighborPaths)
 		for(auto& [dest, path]: paths)
 			shortestPath[{pos, dest}] = path;
@@ -150,6 +166,76 @@ void Location::CalcShortestPaths(bool byType, const TrainUnitType* type) {
 		<< chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "ms" << " // "
 		<< chrono::duration_cast<chrono::seconds>(end - begin).count() << "s");
 	#endif
+}
+
+void CalcPossiblePaths(const Location& location, unordered_map<pair<Position,Position>, vector<Path>>& possiblePaths,
+	unordered_map<Position, bool>& visited, const Position& orgFrom, const Position& from, const Position& to, Path currentPath) {
+	visited[from] = true;
+	if(from == to) {
+		if(currentPath.GetNumberOfTracks() > 0) {
+			possiblePaths[{orgFrom, to}].push_back(currentPath);
+			debug_out("Found path: " << currentPath.toString());
+		}
+	} else if (possiblePaths[{from, to}].size() > 0) {
+		for(auto& path: possiblePaths.at({from, to})) {
+			bool cycle = false;
+			const Track* prev =  nullptr;
+			for(auto t: path.route) {
+				if(prev != nullptr && t->GetType() == TrackPartType::Railroad && visited.at({prev, t})) {
+					cycle = true;
+					break;
+				}
+				prev = t;
+			}
+			if(cycle) continue;
+			Path updatedPath(currentPath);
+			updatedPath.Append(path);
+			debug_out("Found path: " << updatedPath.toString());
+			possiblePaths[{orgFrom, to}].push_back(updatedPath);
+		}
+	} else {
+		for(auto& [pos, path]: location.GetNeighboringPaths(from)) {
+			if(visited.at(pos)) continue;
+			Path updatedPath(currentPath);
+			updatedPath.Append(path);
+			CalcPossiblePaths(location, possiblePaths, visited, orgFrom, pos, to, updatedPath);
+		}
+		// TODO also consider set-back?
+	}
+	visited[from] = false;
+}
+
+void Location::CalcAllPossiblePaths() {
+	if(possiblePaths.size() > 0) return;
+	#if DEBUG
+	auto begin = chrono::steady_clock::now();
+	#endif
+	//Initialize all railroad to railroad distances
+	CalcNeighboringPaths();
+
+	//Initialize Algorithm
+	auto positions = GetAllPositions(tracks);
+	unordered_map<Position, bool> visited_init;
+	for(auto& pos: positions) visited_init[pos] = false;
+	for(auto& pos1: positions) {
+		for(auto& pos2: positions) {
+			possiblePaths[{pos1, pos2}];
+			if(pos1 == pos2) continue;
+			unordered_map<Position, bool> visited(visited_init);
+			debug_out("Calculate all possible paths from (" << pos1.first << "->" << pos1.second 
+				<< ") to (" << pos2.first << "->" << pos2.second << ").");
+			CalcPossiblePaths(*this, possiblePaths, visited, pos1, pos1, pos2, Path());
+			possibleMovements[pos1].insert(possibleMovements[pos1].end(), possiblePaths[{pos1, pos2}].begin(), possiblePaths[{pos1, pos2}].end());
+		}
+	}
+	#if DEBUG
+	auto end = chrono::steady_clock::now();
+	debug_out("Calculating all possible paths finished in "
+		<< chrono::duration_cast<chrono::microseconds>(end - begin).count() << "µs" << " // "
+		<< chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "ms" << " // "
+		<< chrono::duration_cast<chrono::seconds>(end - begin).count() << "s");
+	#endif
+
 }
 
 const Path& Location::GetNeighborPath(const Position& from, const Track* destination) const {
@@ -219,4 +305,21 @@ string Path::toString() const {
 	for(auto t: route) path << t->name << ", ";
 	path << "length: " << length;
 	return path.str();
+}
+void Path::Append(const Path& other) {
+	if(other.route.size() == 0) return;
+	assert(route.size() == 0 || route.back() == other.route.front() || route.back()->IsNeighbor(other.route.front()));
+	if(route.size() == 0) {
+		length = other.length;
+		route = other.route;
+	} else {
+		if(route.back() == other.route.front()) {
+			route.insert(route.end(), next(other.route.begin()), other.route.end());
+		} else if (route.back()->IsNeighbor(other.route.front())) {
+			route.insert(route.end(), other.route.begin(), other.route.end());
+		} else {
+			throw invalid_argument("The two paths " + toString() + " and " + other.toString() + " cannot be appended.");
+		}
+		length += other.length;
+	} 
 }

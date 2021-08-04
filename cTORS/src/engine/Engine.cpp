@@ -1,13 +1,12 @@
 #include "Engine.h"
 using namespace std;
 
-LocationEngine::LocationEngine(const string &path) : path(path), location(Location(path)), 
-	originalScenario(Scenario(path, location)), config(Config(path)),
-	actionValidator(ActionValidator(&config)), actionManager(ActionManager(&config, &location)) {}
+LocationEngine::LocationEngine(const string &path) : path(path), location(Location(path, true)), 
+	config(Config(path)), actionManager(ActionManager(&config, &location)) {}
 
 
 LocationEngine::~LocationEngine() {
-	debug_out("Deleting engine");
+	debug_out("Deleting LocationEngine");
 	for(auto& [name, type]: TrainUnitType::types) {
 		delete type;	
 	}
@@ -19,38 +18,54 @@ LocationEngine::~LocationEngine() {
 	for(auto state: states)
 		EndSession(state);
 	stateActionMap.clear();
+	for(auto& [file, scenario]: scenarios) {
+		delete scenario;
+	}
+	scenarios.clear();
 	results.clear();
-	debug_out("Done deleting engine");
+	debug_out("Done deleting LocationEngine");
 }
 
-list<const Action*> &LocationEngine::Step(State * state, Scenario * scenario) {
+const Scenario& LocationEngine::GetScenario(const string& scenarioFileString) {
+	auto it = scenarios.find(scenarioFileString);
+	if(it == scenarios.end()) {
+		auto scenario = new Scenario(scenarioFileString, location);
+		scenarios[scenarioFileString] = scenario;
+		return *scenario;
+	}
+	return *it->second;
+}
+
+inline void CheckScenarioEnded(const State* state) {
+	if (state->GetTime() > state->GetEndTime()) {
+		if ((state->GetIncomingTrains().size() + state->GetOutgoingTrains().size()) > 0) {
+			throw ScenarioFailedException("End of Scenario reached, but there are remaining incoming or outgoing trains.");
+		} 
+	}
+}
+
+void LocationEngine::Step(State * state) {
 	ExecuteImmediateEvents(state);
-	auto& actions = GetValidActions(state);
-	debug_out("Got valid actions succesfully");
-	EventQueue disturbances = scenario ? scenario->GetDisturbances() : EventQueue();
-	while (actions.empty() && state->GetNumberOfEvents() > 0) {
-		debug_out("No actions but still events available");
+	CheckScenarioEnded(state);
+	EventQueue disturbances; // Currently an empty queue of disturbances. TODO get the disturbances from the Scenario
+	while (!state->IsActionRequired() && state->GetNumberOfEvents() > 0) {
+		debug_out("All shunting units are still active, but still " << state->GetNumberOfEvents() 
+			<< " events available at T" << state->GetTime() << ".");
 		const Event* evnt;
 		if (disturbances.size() > 0 && disturbances.top()->GetTime() <= state->PeekEvent()->GetTime())
 			evnt = disturbances.top();
 		else
 			evnt = state->PopEvent();
-		if (evnt->GetTime() != state->GetTime() && state->IsAnyInactive())
-			throw ScenarioFailedException("Action required, but no valid action found");
 		ExecuteEvent(state, evnt);
 		ExecuteImmediateEvents(state);
-		if (state->GetTime() > state->GetEndTime()) {
-			if ((state->GetIncomingTrains().size() + state->GetOutgoingTrains().size()) > 0) {
-				throw ScenarioFailedException("End of Scenario reached, but there are remaining incoming or outgoing trains.");
-			} else {
-				DELETE_LIST(actions)
-			}
-		} else {
-			actions = GetValidActions(state);
-		}
+		CheckScenarioEnded(state);
 	} 
-	debug_out("Done getting actions. Found " << to_string(actions.size()) << " actions.");
-	return actions;
+	debug_out("Step done.");
+}
+
+bool LocationEngine::IsStateActive(const State* state) const {
+	CheckScenarioEnded(state);
+	return state->IsActionRequired();
 }
 
 void LocationEngine::ApplyAction(State* state, const Action* action) {
@@ -66,7 +81,7 @@ void LocationEngine::ApplyAction(State* state, const Action* action) {
 void LocationEngine::ApplyAction(State* state, const SimpleAction& action) {
 	debug_out("\tApplying action " + action.toString());
 	const Action* _action = GenerateAction(state, action);
-	auto is_valid = actionValidator.IsValid(state, _action);
+	auto is_valid = actionManager.IsValid(state, _action);
 	if(!is_valid.first) {
 		delete _action;
 		throw InvalidActionException(is_valid.second);
@@ -78,7 +93,36 @@ void LocationEngine::ApplyAction(State* state, const SimpleAction& action) {
 	}
 }
 
+void LocationEngine::ApplyWaitAllUntil(State* state, int time) {
+	for(auto& [su, suState]: state->GetShuntingUnitStates()) {
+		if(!suState.waiting && time - state->GetTime() > 0 && !suState.HasActiveAction()) {
+			const auto& action = new WaitAction(su, time - state->GetTime());
+			debug_out("Applying action " << action->toString() << " at T" << state->GetTime());
+			ApplyAction(state, action);
+		}
+	}
+	Step(state);
+}
+
+pair<bool, string> LocationEngine::IsValidAction(const State* state, const SimpleAction& action) const {
+	const Action* _action;
+	try {
+		_action = GenerateAction(state, action);
+	} catch(InvalidActionException& e) {
+		return make_pair(false, e.what());
+	}
+	auto result = actionManager.IsValid(state, _action);
+	delete _action;
+	return result;
+}
+
+pair<bool, string> LocationEngine::IsValidAction(const State* state, const Action* action) const {
+	return actionManager.IsValid(state, action);
+}
+
 const Action* LocationEngine::GenerateAction(const State* state, const SimpleAction& action) const {
+	if(!config.IsGeneratorActive(action.GetGeneratorName()))
+		throw InvalidActionException("Error in generating action (" + action.toString() +"): Action generator " + action.GetGeneratorName() + " is disabled.");
 	try {
 		return actionManager.GetGenerator(action.GetGeneratorName())->Generate(state, action);
 	} catch(exception& e) {
@@ -93,15 +137,13 @@ list<const Action*> &LocationEngine::GetValidActions(State* state) {
 		DELETE_LIST(actions)
 		actionManager.Generate(state, actions);
 		debug_out("Generated "+ to_string(actions.size())+" actions");
-		actionValidator.FilterValid(state, actions);
-		debug_out("GetValidActions list filtered");
 		state->SetUnchanged();
 	}
 	debug_out("Return valid actions: ");
 	auto& actions = stateActionMap.at(state);
 	int i=0;
 	for (auto a : actions) {
-		debug_out(to_string(i++) << ":\t" + a->toString() << ".\n");
+		debug_out("\t" << setw(3) << right << to_string(i++) << ": " + a->toString());
 	}
 	return actions;
 }
@@ -130,18 +172,38 @@ void LocationEngine::ExecuteEvent(State* state, const Event* e) {
 	delete e;
 }
 
+
+void LocationEngine::ApplyActionAndStep(State* state, const Action* action) {
+	ApplyAction(state, action);
+	Step(state);
+}
+
+void LocationEngine::ApplyActionAndStep(State* state, const SimpleAction& action) {
+	ApplyAction(state, action);
+	Step(state);
+}
+
 bool LocationEngine::EvaluatePlan(const Scenario& scenario, const POSPlan& plan) {
 	auto state = StartSession(scenario);
+	Step(state);
 	auto it = plan.GetActions().begin();
     while(it != plan.GetActions().end()) {
         try {
-            Step(state);
+			if(DEBUG) state->PrintStateInfo();
             if(state->GetTime() >= it->GetSuggestedStart()) {
-                ApplyAction(state, *(it->GetAction()));
+                debug_out("Applying action " << (it->GetAction())->toString() << " at T" << state->GetTime() 
+					<< " [" << it->GetSuggestedStart() << "-" << it->GetSuggestedEnd() << "]");
+				ApplyActionAndStep(state, *(it->GetAction()));
                 it++;
-            }
-        } catch (ScenarioFailedException e) {
-			cout << "Scenario failed.\n";
+            } else {
+				ApplyWaitAllUntil(state, it->GetSuggestedStart());
+			}
+        } catch (ScenarioFailedException& e) {
+			cout << "Scenario failed." << endl;
+			return false;
+			break;
+		} catch (InvalidActionException& e) {
+			cout << "Scenario failed. Invalid action: " << e.what() << "." << endl;
 			return false;
 			break;
 		}
@@ -171,10 +233,13 @@ void LocationEngine::EndSession(State* state) {
 }
 
 void LocationEngine::CalcShortestPaths() { 
-	bool byTrackType = true; //TODO read parameter for distance matrix from config file
 	for(const auto& [trainTypeName, trainType]: TrainUnitType::types) {
-		location.CalcShortestPaths(byTrackType, trainType);
+		location.CalcShortestPaths(trainType);
 	}
+} 
+
+void LocationEngine::CalcAllPossiblePaths() { 
+	location.CalcAllPossiblePaths();
 } 
 
 const Path LocationEngine::GetPath(const State* state, const Move& move) const {
@@ -204,13 +269,6 @@ State* Engine::StartSession(const string& location, const Scenario& scenario) {
 	return state;
 }
 
-State* Engine::StartSession(const string& location) {
-	auto e = GetOrLoadLocationEngine(location);
-	auto state = e->StartSession(e->GetScenario());
-	engineMap[state] = e;
-	return state;
-}
-
 void Engine::EndSession(State* state) {
 	auto e = engineMap.at(state);
 	engineMap.erase(state);
@@ -220,6 +278,12 @@ void Engine::EndSession(State* state) {
 void Engine::CalcShortestPaths() {
 	for(auto& [loc, engine]: engines) {
 		engine.CalcShortestPaths();
+	}
+}
+
+void Engine::CalcAllPossiblePaths() {
+	for(auto& [loc, engine]: engines) {
+		engine.CalcAllPossiblePaths();
 	}
 }
 

@@ -36,7 +36,7 @@ bool Train::operator==(const Train& train) const {
 }
 
 const string Train::toString() const {
-	return "(" + to_string(id) + ", " + type->toString() + ")";
+	return "(" + (id == -1 ? "****" : to_string(id)) + ", " + type->toString() + ")";
 }
 
 void Train::Serialize(PBTrainUnit* pb_t) const {

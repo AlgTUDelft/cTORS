@@ -5,6 +5,7 @@ import itertools
 from functools import reduce
 import operator as op
 from abc import ABC, abstractmethod
+import os
 
 from warnings import warn
 
@@ -19,14 +20,19 @@ class ScenarioGenerator(ABC):
         self.location = None
         self.match_outgoing_trains = match_outgoing_trains
         self.max_length = n_trains if max_length is None else max_length
+        self.enforce_max_length = not max_length is None
         self.max_trains_per_track = max_trains_per_track
     
-    def initialize(self, scenario: Scenario, location: Location) -> None:
-        self.original_scenario = scenario
-        self.location = location
+    def initialize(self, engine, scenario_file_string) -> None:
+        self.engine = engine
+        self.location = engine.get_location()
+        self.scenario_file_string = scenario_file_string
         
     @abstractmethod
     def generate_scenario(self) -> Scenario: pass
+
+    @abstractmethod
+    def get_max_trains(self): pass
     
     def get_scenario(self) -> Scenario:
         scenario = self.generate_scenario()
@@ -35,7 +41,9 @@ class ScenarioGenerator(ABC):
     
     def match_trains(self, scenario: Scenario) -> None:
         if self.match_outgoing_trains:
-            _match_trains(scenario.incoming_trains, scenario.outgoing_trains)
+            incoming = [t for su in [incoming.shunting_unit for incoming in scenario.incoming_trains] for t in su.trains]
+            outgoing = [t for su in [outgoing.shunting_unit for outgoing in scenario.outgoing_trains] for t in su.trains]
+            _match_trains(incoming, outgoing)
         else:
             for o in scenario.outgoing_trains:
                 for tu in o.shunting_unit.trains:
@@ -46,31 +54,67 @@ class ScenarioGeneratorFromScenario(ScenarioGenerator):
     def __init__(self, n_combinations=100, *args, **kwargs):
         super(ScenarioGeneratorFromScenario, self).__init__(*args, **kwargs)
         self.n_combinations = n_combinations
-        if self.max_length != self.n_trains:
-            warn("parameter 'max_length' not supported for ScenarioGeneratorFromScenario.")
+        if not self.match_outgoing_trains and self.enforce_max_length:
+            warn("parameter 'max_length' is only supported when matching is enabled")
         if self.max_trains_per_track != self.max_trains_per_track:
             warn("parameter 'max_trains_per_track' not supported for ScenarioGeneratorFromScenario.")
         
-    def initialize(self, scenario: Scenario, location: Location) -> None:
-        super(ScenarioGeneratorFromScenario, self).initialize(scenario, location)
-        max_trains = scenario.number_of_trains
-        max_disturbances = len(scenario.get_disturbance_list())
-        max_workers = len(list(scenario.employees))
-        self.n_trains = self._get_number(self.n_trains, max_trains)
+    def initialize(self, engine, scenario_file_string) -> None:
+        super(ScenarioGeneratorFromScenario, self).initialize(engine, scenario_file_string)
+        self.scenario = engine.get_scenario(scenario_file_string)
+        self._set_valid_trains()
+        self.max_trains = len(self.valid_trains)
+        max_disturbances = len(self.scenario.get_disturbance_list())
+        max_workers = len(list(self.scenario.employees))
+        self.n_trains = self._get_number(self.n_trains, self.max_trains)
         self.n_disturbances = self._get_number(self.n_disturbances, max_disturbances, min=0)
         self.n_workers = self._get_number(self.n_workers, max_workers)
         self.combination_generator = self._combination_generator()
-        
+
+    def _set_valid_trains(self):
+        if self.enforce_max_length:
+            _match_trains(
+                [t for su in [incoming.shunting_unit for incoming in self.scenario.incoming_trains] for t in su.trains], 
+                [t for su in [outgoing.shunting_unit for outgoing in self.scenario.outgoing_trains] for t in su.trains])
+            valid_inc_trains = []
+            for inc in self.scenario.incoming_trains:
+                for i, t in enumerate(inc.shunting_unit.trains):
+                    if i < self.max_length: valid_inc_trains.append(t)
+                    else: break
+            self.valid_trains = []
+            for out in self.scenario.outgoing_trains:
+                for i, t in enumerate(out.shunting_unit.trains):
+                    if i < self.max_length:
+                        if any((t.id == t2.id for t2 in valid_inc_trains)):
+                            self.valid_trains.append(t)
+                    else: break
+            incoming_trains = []
+            outgoing_trains = []
+            for inc in self.scenario.incoming_trains:
+                inc.shunting_unit.trains = [t for t in inc.shunting_unit.trains if t in self.valid_trains]
+                if len(inc.shunting_unit.trains) > 0:
+                    incoming_trains.append(inc)
+            for out in self.scenario.outgoing_trains:
+                out.shunting_unit.trains = [t for t in out.shunting_unit.trains if t in self.valid_trains]
+                if len(out.shunting_unit.trains) > 0:
+                    outgoing_trains.append(out)
+            self.scenario.set_incoming_trains(incoming_trains)
+            self.scenario.set_outgoing_trains(outgoing_trains)
+        else:
+            self.valid_trains = [t for su in [incoming.shunting_unit for incoming in self.scenario.incoming_trains] for t in su.trains]        
+
+    def get_max_trains(self):
+        return self.max_trains
+
     def _combination_generator(self):
-        max_trains = self.original_scenario.number_of_trains
-        combination_generator = itertools.combinations(range(max_trains), self.n_trains)
+        combination_generator = itertools.combinations(range(self.max_trains), self.n_trains)
         combinations_left = self.n_combinations
         seen_combinations = 0
-        total_combinations = ScenarioGeneratorFromScenario.__ncr(max_trains, self.n_trains)
+        total_combinations = ScenarioGeneratorFromScenario.__ncr(self.max_trains, self.n_trains)
         while True:
             combination = next(combination_generator, None)
             if combination is None:
-                combination_generator = itertools.combinations(range(max_trains), self.n_trains)
+                combination_generator = itertools.combinations(range(self.max_trains), self.n_trains)
                 combination = next(combination_generator)
             probability = (seen_combinations + combinations_left) / total_combinations 
             if probability >= 1.0 or random.random() < probability:
@@ -88,18 +132,12 @@ class ScenarioGeneratorFromScenario(ScenarioGenerator):
         return given
 
     def generate_scenario(self) -> Scenario:
-        scenario = self.original_scenario.get_copy() 
+        scenario = self.scenario.get_copy() 
         self._select_trains(scenario)
         self._select_disturbances(scenario, self.n_disturbances)
         self._select_workers(scenario, self.n_workers)
         return scenario
-    
-#     def _get_train_selector_generator(self, scenario, n_trains):
-#         incoming_shunting_units = [incoming.shunting_unit for incoming in scenario.get_incoming_trains()]
-#         incoming_trains = [u for su in incoming_shunting_units for u in su.trains] 
-#         if n_trains >= len(incoming_trains): yield incoming_trains
-#         return _random_train_selection(incoming_trains, len(incoming_trains) - n_trains, self.n_combinations)
-    
+        
     def _select_trains(self, scenario):
         incoming_shunting_units = [incoming.shunting_unit for incoming in scenario.incoming_trains]
         outgoing_shunting_units = [outgoing.shunting_unit for outgoing in scenario.outgoing_trains] 
@@ -152,6 +190,9 @@ class RandomScenarioGenerator(ScenarioGenerator):
         workers = self._generate_workers()
         return self._generate_scenario(incoming, outgoing, workers, disturbances)
     
+    def get_max_trains(self):
+        return self.n_trains
+
     def _generate_trains(self):
         return [Train(i, self._get_random_train_type(), self._get_task_list()) for i in range(1, self.n_trains+1)]
     
@@ -290,8 +331,49 @@ class RandomScenarioGenerator(ScenarioGenerator):
             scenario.add_disturbance(d)
         scenario.set_end_time(max([o.time for o in outgoing]))
         return scenario
-            
+
+class ScenarioGeneratorFromFolder(ScenarioGenerator):
+
+    def __init__(self, subclass, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.subclass = subclass
+        self.args = args
+        self.kwargs = kwargs
+
+    def initialize(self, engine, scenario_file_string) -> None:
+        super().initialize(engine, scenario_file_string)
+        self.generators = {}
+        scenarios = []
+        if isinstance(scenario_file_string, list):
+            scenarios = scenario_file_string
+        elif os.path.isdir(scenario_file_string):
+            for file in os.listdir(scenario_file_string):
+                scenarios.append(os.path.join(scenario_file_string, file))
+        elif os.path.isfile(scenario_file_string):
+            scenarios = [scenario_file_string]
+        else:
+            raise NotImplementedError("No scenarios can be obtained from " + scenario_file_string)
+        to_be_deleted = []
+        for scenario in scenarios:
+            self.generators[scenario] = self.subclass(*self.args, **self.kwargs)
+            self.generators[scenario].initialize(self.engine, scenario)
+            if self.generators[scenario].get_max_trains() < self.n_trains:
+                to_be_deleted.append(scenario)
+        for scenario in to_be_deleted:
+            del self.generators[scenario]
+
+    def get_max_trains(self):
+        return super().get_max_trains()
+
+    def generate_scenario(self) -> Scenario:
+        while True:
+            scenario_key = random.choice(list(self.generators.keys()))
+            scenario_gen = self.generators[scenario_key]
+            return scenario_gen.generate_scenario()
+
+
 def _find_matching_train(train, train_list):
+    mu = None
     if train.id != -1:
         mu = next((t for t in train_list if train.id == t.id), None)
     if mu is None:

@@ -193,7 +193,9 @@ void POSPlan::Serialize(LocationEngine& engine, const Scenario& scenario, PBPOSP
             engine.Step(state);
             debug_out("Finished Step Update [T="+to_string(state->GetTime())+"].");
             if(state->GetTime() >= it->GetSuggestedStart()) {
-                if(true || (!instanceof<BeginMove>(it->GetAction()) && !instanceof<EndMove>(it->GetAction()))) {
+                if(instanceof<Wait>(it->GetAction())) {
+                    //SKIP
+                } else if(true || (!instanceof<BeginMove>(it->GetAction()) && !instanceof<EndMove>(it->GetAction()))) {
                     auto pb_action = pb_plan->add_actions();
                     debug_out("Serialize action");
                     it->Serialize(engine, state, pb_action);

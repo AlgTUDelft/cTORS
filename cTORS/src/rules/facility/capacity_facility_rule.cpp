@@ -1,11 +1,11 @@
 #include "BusinessRules.h"
 
-/*
-
-Rule that verifies that no more tasks are executed at a facility than the facility can handle.
-
-*/
-
+/**
+ * Validates a ServiceAction for the given state. 
+ * The ServiceAction is invalid iff
+ * 1. The servicing of this Train would make the facility exceed its capacity.
+ * @return A pair describing 1) whether the action is valid, and 2) if not, why
+ */
 pair<bool, string> capacity_facility_rule::IsValid(const State* state, const Action* action) const {
 	if (auto sa = dynamic_cast<const ServiceAction*>(action)) {
 		auto fa = sa->GetFacility();

@@ -1,12 +1,10 @@
 #include "Scenario.h"
 
-const string Scenario::scenarioFileString = "scenario.json";
-
 Scenario::Scenario() : startTime(0), endTime(0) {}
 
-Scenario::Scenario(string folderName, const Location& location) {
+Scenario::Scenario(string scenarioFileString, const Location& location) {
 	PBScenario pb_scenario;
-	parse_json_to_pb(fs::path(folderName) / fs::path(scenarioFileString), &pb_scenario);
+	parse_json_to_pb(fs::path(scenarioFileString), &pb_scenario);
 	Init(pb_scenario, location);
 }
 
@@ -118,10 +116,10 @@ TrainGoal* ImportTrainGoal(const Location& location, const PBTrainGoal& m, bool 
 
 void Scenario::ImportShuntingUnits(const PBScenario& pb_scenario, const Location& location) {
 	for (auto& pb_train_type: pb_scenario.trainunittypes()) {
-		TrainUnitType* tt = new TrainUnitType(pb_train_type);
-		if (TrainUnitType::types.find(tt->displayName) != TrainUnitType::types.end())
-			delete TrainUnitType::types.at(tt->displayName);
-		TrainUnitType::types[tt->displayName] = tt;
+		if (TrainUnitType::types.find(pb_train_type.displayname()) == TrainUnitType::types.end()) {
+			TrainUnitType* tt = new TrainUnitType(pb_train_type);
+			TrainUnitType::types[tt->displayName] = tt;
+		}
 	}
 	for(auto& pb_in : pb_scenario.in())
 		incomingTrains.push_back(dynamic_cast<Incoming*>(ImportTrainGoal(location, pb_in, true, false)));
@@ -152,5 +150,39 @@ void Scenario::Serialize(PBScenario* pb_scenario) const {
 	pb_scenario->set_endtime(GetEndTime());
 	for(auto& [name, type]: TrainUnitType::types) {
 		type->Serialize(pb_scenario->add_trainunittypes());
+	}
+}
+
+void Scenario::PrintScenarioInfo() const {
+	cout << "|---------------------------|" << endl;
+	cout << "|   Scenario                |" << endl;
+	cout << "|---------------------------|" << endl;
+	cout << "Start time: " << startTime << ", end time: " << endTime << endl << endl;
+	if(incomingTrains.size() == 0)
+		cout << "No arrivals" << endl << endl;
+	else {
+		cout << "Arrivals:" << endl;
+		for(auto inc: incomingTrains) {
+			cout << "\tT" << inc->GetTime() << ": \t" << inc->GetShuntingUnit() << " (" << inc->GetShuntingUnit()->GetTrainString() << ") at " 
+				<< inc->GetParkingTrack() << " from " << inc->GetSideTrack();
+			if(inc->IsInstanding())
+				cout << " (instanding)";
+			cout << endl;
+		}
+		cout << endl;
+	}
+
+	if(outgoingTrains.size() == 0)
+		cout << "No departures" << endl << endl;
+	else {
+		cout << "Departures:" << endl;
+		for(auto out: outgoingTrains) {
+			cout << "\tT" << out->GetTime() << ": \t" << out->GetShuntingUnit() << " (" << out->GetShuntingUnit()->GetTrainString() << ") at " 
+				<< out->GetParkingTrack() << " to " << out->GetSideTrack();
+			if(out->IsInstanding())
+				cout << " (outstanding ix-" << to_string(out->GetStandingIndex()) << ")";
+			cout << endl;
+		}
+		cout << endl;
 	}
 }

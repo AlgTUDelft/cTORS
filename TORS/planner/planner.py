@@ -1,97 +1,86 @@
 from abc import ABC, abstractmethod
 import random
-import multiprocessing
-import time
-#from tors.core.location.global_location_container import GlobalLocation
+from pyTORS import Engine, InvalidActionError, State, Action, SimpleAction, Location
+from typing import Union, List, Tuple, Optional
 
 class Planner(ABC):
     
-    def __init__(self, seed, verbose, config):
+    def __init__(self, config):
+        """
+        Initialize the planner with a reference to the engine and a time limit.
+        The time limit is just for info. The planner is stopped after this limit. 
+        The config parameter contains the contents of the agent config file (default agent.json)
+        """
         super(Planner, self).__init__()
-        self.random = random.Random(seed)
+        self.random = random.Random(config.seed)
+        self.verbose = config.verbose
         self.location = None
-        self.verbose = verbose
-        self.config = config
+        self.base_config = config
+        self.time_limit = config.time_limit
     
     def get_random(self):
+        """
+        Get the random generator initialized with the given seed
+        """
         return self.random
     
-    def set_location(self, location):
+    def initialize(self, engine: Engine, location: Location):
+        """
+        Set the engine and location of the planner
+        """
+        self._engine = engine
         self.location = location
-        #GlobalLocation(location)
         
-    def get_location(self):
+    def get_location(self) -> Location:
+        """
+        Get the location
+        """
         return self.location
     
     def report_result(self, result):
-        pass
+        """
+        Report the scenario result back to the planner
+        """
+
+    def get_valid_actions(self, state: State) -> List[Action]:
+        """
+        Return a list of all the valid actions in the given state
+        """
+        return self._engine.get_valid_actions(state)
+
+    def is_valid_action(self, state: State, action: Union[Action, SimpleAction]) -> Tuple[bool, str]:
+        """
+        Return a tuple (result, reason), with 
+        result: true iff the action is valid in the given state
+        reason: an explanation why the action is not valid if it is not valid
+        """
+        return self._engine.is_valid_action(state, action)
+
+    def generate_action(self, state: State, action: SimpleAction) -> Action:
+        """
+        Generate an Action from the simple action in the given state
+        """
+        return self._engine.generate_action(state, action)
     
     @abstractmethod
-    def get_action(self, state, actions): pass
+    def get_action(self, state: State) -> Optional[Union[Action, SimpleAction]]: 
+        """
+        Get an action for the given state, and choose from one of the actions in the list actions.
+        Should return None if no valid action is available
+        """
     
     @abstractmethod
-    def reset(self): pass
+    def reset(self):
+        """
+        Reset the planner. This method is called after every run
+        """
+
+    @abstractmethod
+    def close(self):
+        """
+        Close the planner and close all resources.
+        This method is called at the end of all runs
+        """
     
     def print(self, m):
         if self.verbose >= 1: print(m)
-
-def record_time(return_type=None):
-    def _record_time(func):
-        def wrapper(self, *args, **kwargs):
-            assert isinstance(self, RemotePlanner)
-            t1 = time.time_ns()
-            func(self, *args, **kwargs)
-            if not return_type is None:
-                if self.connection.poll(max(0, (self.time_limit-self.time_taken)/1e9) + 0.1):
-                    result = self.connection.recv()
-                    if not isinstance(result, return_type):
-                        raise Exception("Unexpected return type {}. Expected {}.".format(type(result), return_type))
-                    return result
-                else:
-                    self.subprocess.terminate()
-                    self.connection.close()
-                    raise Exception("All available time is used")
-            self.time_taken += (time.time_ns()-t1) 
-        return wrapper
-    return _record_time
-
-class RemotePlanner(Planner):
-    
-    def __init__(self, planner, config):
-        super(RemotePlanner, self).__init__(config.planner.seed, config.planner.verbose, {})
-        self.connection, child_conn = multiprocessing.Pipe()
-        self.subprocess = multiprocessing.Process(target=run, args=(planner, child_conn,), daemon=True)
-        self.config = config
-        self.reset()
-        self.subprocess.start()
-    
-    @record_time()
-    def set_location(self, location):
-        self.connection.send(("set_location", (location,)))
-    
-    @record_time ()
-    def resport_result(self, result):
-        self.connection.send(("report_result", (result, )))
-        
-    @record_time(tuple)
-    def get_action(self, state, actions):
-        self.connection.send(("get_action", (state, actions)))
-
-    @record_time()
-    def reset(self):
-        self.time_limit = self.config.planner.time_limit * 1e9
-        self.time_taken = 0
-        self.connection.send(("reset", ()))
-    
-def run(planner, conn):
-    while True:
-        try:
-            func, args = conn.recv()
-            print("Recv: {}, {}".format(func, args))
-        except EOFError:
-            return
-        if not hasattr(planner, func) or not callable(getattr(planner, func)):
-            raise Exception("Planner of type {} does not have the method {}".format(type(planner), func))
-        result = getattr(planner, func)(*args)
-        if not result is None: conn.send(result)
-    

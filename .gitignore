@@ -24,3 +24,4 @@ settings.json
 data/*
 !data/Demo
 TORS/runs
+cTORS/doc

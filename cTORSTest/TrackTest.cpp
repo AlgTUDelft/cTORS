@@ -4,13 +4,13 @@
 namespace cTORSTest
 {
 	TEST_CASE("Track Test") {
-		Track t1 = Track("r0", TrackPartType::Railroad, 100, "rail0", false, false, false, false);
+		Track t1 = Track("r0", TrackPartType::Railroad, 100, "rail0", false, false, false);
 		Track t1copy = Track(t1);
 		CHECK(t1 == t1copy);
-		Track t2 = Track("s1", TrackPartType::Switch, 50, "switch1", false, false, false, false);
-		Track t3 = Track("b2", TrackPartType::Bumper, 10, "bumper2", false, false, false, false);
-		Track t4 = Track("b3", TrackPartType::Bumper, 10, "bumper3", false, false, false, false);
-		Track t5 = Track("b4", TrackPartType::Bumper, 10, "bumper4", false, false, false, false);
+		Track t2 = Track("s1", TrackPartType::Switch, 50, "switch1", false, false, false);
+		Track t3 = Track("b2", TrackPartType::Bumper, 10, "bumper2", false, false, false);
+		Track t4 = Track("b3", TrackPartType::Bumper, 10, "bumper3", false, false, false);
+		Track t5 = Track("b4", TrackPartType::Bumper, 10, "bumper4", false, false, false);
 		CHECK(t1 != t2);
 		CHECK(t3 != t4);
 		t1.AssignNeighbors({&t3}, {&t2});

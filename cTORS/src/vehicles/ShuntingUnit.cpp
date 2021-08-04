@@ -37,6 +37,18 @@ int ShuntingUnit::GetTrainIndexByID(int id) const {
 	return it - trains.begin();
 }
 
+
+bool ShuntingUnit::HasTrainByID(int id) const {
+	return GetTrainByID(id) != nullptr;
+}
+	
+bool ShuntingUnit::HasAnyTrainByIDs(vector<int> ids) const {
+	for(auto& id: ids) {
+		if(HasTrainByID(id)) return true;
+	}
+	return false;
+}
+
 int ShuntingUnit::GetSetbackTime(const Train* const frontTrain, bool normTime, bool walkTime, int setbackTime) const {
 	if(normTime && trains.size() > 0) {
 		setbackTime += frontTrain->GetType()->backNormTime;

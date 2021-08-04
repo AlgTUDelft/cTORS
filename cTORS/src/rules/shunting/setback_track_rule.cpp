@@ -1,12 +1,11 @@
 #include "BusinessRules.h"
 
-/*
-
-Rule that verifies that performing a setback action on a shunting unit is 
-allowed on the track where the shunting unit is at.
-
-*/
-
+/**
+ * Validates a SetbackAction for the given state. 
+ * The SetbackAction is invalid iff
+ * 1. The ShuntingUnit's current Track does not allow for saw movements.
+ * @return A pair describing 1) whether the action is valid, and 2) if not, why
+ */
 pair<bool, string> setback_track_rule::IsValid(const State* state, const Action* action) const {
 	if (auto sa = dynamic_cast<const SetbackAction*>(action)) {
 		auto su = action->GetShuntingUnit();

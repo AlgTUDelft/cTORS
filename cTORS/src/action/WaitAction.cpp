@@ -16,10 +16,9 @@ const string WaitAction::toString() const {
 }
 
 const Action* WaitActionGenerator::Generate(const State* state, const SimpleAction& action) const {
-	auto su = state->GetShuntingUnitByTrainIDs(action.GetTrainIDs());
+	auto su = InitialCheck(state, action);
 	auto e = state->PeekEvent();
 	if (state->IsWaiting(su)) throw InvalidActionException("The ShuntingUnit is already waiting.");
-	if (state->HasActiveAction(su)) throw InvalidActionException("The ShuntingUnit is already executing an action.");
 	if(e == nullptr || e->GetTime() == state->GetTime()) throw InvalidActionException("There is nothing to wait for.");
 	int dif = e->GetTime() - state->GetTime();
 	//if (dif > 30) dif = 30;

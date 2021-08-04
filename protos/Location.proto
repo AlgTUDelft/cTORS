@@ -117,8 +117,6 @@ message TrackPart {
 
     // Denotes whether this trackpart is electrified
     bool isElectrified = 9;
-    
-    optional bool standingAllowed = 10;
 }
 
 message TaskType {

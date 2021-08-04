@@ -3,7 +3,7 @@
 const string Config::configFileString = "config.json";
 
 
-Config::Config(string folderName) {
+Config::Config(const string& folderName) {
 	try {
 		ifstream fileInput(fs::path(folderName) / fs::path(configFileString));
 		if (!fileInput.good())
@@ -36,19 +36,19 @@ void Config::ImportActionRules(const json& j) {
 	}
 }
 
-bool Config::IsBusinessRuleActive(string name) const { 
+bool Config::IsBusinessRuleActive(const string& name) const { 
 	auto it = businessRules.find(name);
 	if(it == businessRules.end()) return true;
 	return it->second;
 }
 
-bool Config::IsGeneratorActive(string name) const {
+bool Config::IsGeneratorActive(const string& name) const {
 	auto it = actionRules.find(name);
 	if(it == actionRules.end()) return true;
 	return it->second;
 }
 
-const json Config::GetActionParameters(string name) const {
+const json Config::GetActionParameters(const string& name) const {
 	auto it = actionParams.find(name);
 	if(it == actionParams.end()) return json();
 	return it->second;

@@ -1,21 +1,15 @@
 #include "Track.h"
 
-Track::Track(const string& id, TrackPartType type, double length, const string& name, bool sawMovementAllowed,
-	bool parkingAllowed, bool isElectrified, bool standingAllowed) :
+Track::Track(const string& id, TrackPartType type, double length, const string& name,
+	bool sawMovementAllowed, bool parkingAllowed, bool isElectrified) :
 	id(id), type(type), length(length),	name(name), sawMovementAllowed(sawMovementAllowed),
-	parkingAllowed(parkingAllowed), isElectrified(isElectrified),
-	standingAllowed(standingAllowed) {
-}
+	parkingAllowed(parkingAllowed), isElectrified(isElectrified) { }
 
 Track::Track(const Track& track) :
 	id(track.id), type(track.type), length(track.length),
 	name(track.name), sawMovementAllowed(track.sawMovementAllowed),
 	parkingAllowed(track.parkingAllowed), isElectrified(track.isElectrified),
-	standingAllowed(track.standingAllowed), aSides(track.aSides),
-	bSides(track.bSides), next(track.next) {
-}
-
-Track::~Track() { }
+	aSides(track.aSides), bSides(track.bSides), next(track.next) { }
 
 void Track::AssignNeighbors(vector<const Track*> aside, vector<const Track*> bside)
 {

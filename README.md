@@ -1,8 +1,6 @@
 # Treinonderhoud- en -rangeersimulator (TORS)
 This implementation of TORS consists of a backend written in C++ (cTORS), and a front-end written in python (TORS).
 
-Full documentation can be found at [algtudelft.github.io/cTORS](https://algtudelft.github.io/cTORS/).
-
 ## Project setup
 The basic project setup uses the structure provided by cmake. The subfolders are subprojects:
 * cTORS: The c++ implementation of TORS
@@ -80,7 +78,8 @@ To use cTORS in python, you need to import they `pyTORS` library. E.g.
 from pyTORS import Engine
 
 engine = Engine("data/Demo")
-state = engine.start_session()
+scenario = engine.get_scenario("data/Demo/scenario.json")
+state = engine.start_session(scenario)
 
 actions = engine.step(state)
 engine.apply_action(actions[0])
@@ -156,6 +155,28 @@ To run the cTORS tests, execute the commands
 cd build
 ctest
 ```
+
+## Documentation
+The documentation in the C++ code is written in the Doxygen format. Install doxygen (optional) to generate the documentation, or check the full documentation online at [algtudelft.github.io/cTORS](https://algtudelft.github.io/cTORS/).
+
+### Dependencies installation
+To generate the documentation, install the following programs:
+```sh
+apt-get install -y doxygen graphviz fonts-freefont-ttf
+apt-get install -y libclang-dev
+python -m pip install git+git://github.com/pybind/pybind11_mkdoc.git@master
+python -m pip install pybind11_stubgen
+```
+
+### Generate the documentation
+With the dependencies installed, cmake automatically generates the documentation. It can also be generated manually by running
+```sh
+cd cTORS
+doxygen Doxyfile
+cd ..
+python -m pybind11_mkdoc -o pyTORS/docstrings.h cTORS/include/*.h -I build/cTORS
+```
+This produces as output the `cTORS/doc` folder and the `pyTORS/docstrings.h` source file. This last file is used in `pyTORS/module.cpp` to generate the python docs.
 
 ## Contributors
 * Mathijs M. de Weerdt: Conceptualization, Supervision, Project administration, Funding acquisition, Writing - review & editing

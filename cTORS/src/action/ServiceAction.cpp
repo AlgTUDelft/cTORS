@@ -5,10 +5,11 @@ void ServiceAction::Start(State* state) const {
 	const ShuntingUnit* su = GetShuntingUnit();
 	auto tu = GetTrain();
 	auto ta = GetTask();
-	state->AddActiveTaskToTrain(tu, ta);
+	state->AddActiveTaskToTrain(tu, *ta);
 	for (auto e : GetEmployees()) {
 		//TODO
 	}
+	state->RemoveTaskFromTrain(tu, *ta);
 	state->AddActiveAction(su, this);
 }
 
@@ -16,8 +17,7 @@ void ServiceAction::Finish(State* state) const {
 	auto tu = GetTrain();
 	auto ta = GetTask();
 	state->RemoveActiveAction(su, this);
-	state->RemoveActiveTaskFromTrain(tu, ta);
-	state->RemoveTaskFromTrain(tu, *ta);
+	state->RemoveActiveTaskFromTrain(tu, *ta);
 }
 
 const string ServiceAction::toString() const {
@@ -27,7 +27,8 @@ const string ServiceAction::toString() const {
 const Action* ServiceActionGenerator::Generate(const State* state, const SimpleAction& action) const {
 	auto service = static_cast<const Service*>(&action);
 	auto su = state->GetShuntingUnitByTrainIDs(action.GetTrainIDs());
-	auto train = state->GetTrainByTrainID(service->GetTrain().GetID());
+	if(su == nullptr) throw InvalidActionException("Shunting unit with trains " + Join(action.GetTrainIDs(), "-") + " not found");
+	auto train = su->GetTrainByID(service->GetTrain().GetID());
 	auto tasks = state->GetTasksForTrain(train);
 	auto& task = service->GetTask();
 	auto it = find(tasks.begin(), tasks.end(), task);

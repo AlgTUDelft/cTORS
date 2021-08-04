@@ -2,8 +2,8 @@
 #include "State.h"
 
 void SetbackAction::Start(State* state) const {
-	const ShuntingUnit* su = GetShuntingUnit();
-	const ShuntingUnitState& suState = state->GetShuntingUnitState(su);
+	auto su = GetShuntingUnit();
+	auto& suState = state->GetShuntingUnitState(su);
 	state->SetPrevious(su, suState.position->GetOppositeSide(suState.previous));
 	state->SwitchFrontTrain(su);
 	for (auto e : GetDrivers()) {
@@ -35,8 +35,8 @@ int SetbackActionGenerator::GetDuration(const State* state, const ShuntingUnit* 
 }
 
 const Action* SetbackActionGenerator::Generate(const State* state, const SimpleAction& action) const {
-	auto su = state->GetShuntingUnitByTrainIDs(action.GetTrainIDs());
-	auto suState = state->GetShuntingUnitState(su);
+	auto su = InitialCheck(state, action);
+	auto& suState = state->GetShuntingUnitState(su);
 	vector<const Employee*> drivers;
 	auto duration = GetDuration(state, su, drivers.size());
 	return new SetbackAction(su, drivers, duration);
@@ -46,7 +46,7 @@ void SetbackActionGenerator::Generate(const State* state, list<const Action*>& o
 	if(state->GetTime()==state->GetEndTime()) return;
 	bool driver_mandatory = false;//TODO get value from config
 	for (const auto& [su, suState] : state->GetShuntingUnitStates()) {
-		if (!suState.moving || suState.waiting || suState.HasActiveAction() || suState.inNeutral) continue;
+		if (suState.waiting || suState.inNeutral || suState.HasActiveAction()) continue;
 		vector<const Employee*> drivers;
 		if (driver_mandatory) {
 			//TODO

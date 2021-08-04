@@ -1,17 +1,25 @@
+/** \file Config.h
+ * Describes the Config class
+ */
 #pragma once
 #ifndef CONFIG_H
 #define CONFIG_H
+//!\cond SYS_HEADER
 #include <filesystem>
 #include <fstream>
-#include <string>
 #include <map>
 #include <nlohmann/json.hpp>
 #include <iostream>
+//!\endcond
 #include "Exceptions.h"
 namespace fs = std::filesystem;
 using namespace std;
+/** a json object, from nlohmann::json */
 using json = nlohmann::json;
 
+/**
+ * The Config class describes the configuration for the Engine
+ */
 class Config
 {
 private:
@@ -23,11 +31,16 @@ private:
 	void ImportBusinessRules(const json& j);
 	void ImportActionRules(const json& j);
 public:
+	/** Construct a default Config object */
 	Config() = default;
-	Config(string path);
-	bool IsBusinessRuleActive(string name) const;
-	bool IsGeneratorActive(string name) const;
-	const json GetActionParameters(string name) const;
+	/** Construct a Config object based on the given json file */
+	Config(const string& path);
+	/** Returns true iff the BusinessRule defined by the name is active */
+	bool IsBusinessRuleActive(const string& name) const;
+	/** Returns true iff the ActionGenerator defined by the name is active */
+	bool IsGeneratorActive(const string& name) const;
+	/** Get the parameters for the ActionGenerator defined by the name */
+	const json GetActionParameters(const string& name) const;
 };
 
 #endif

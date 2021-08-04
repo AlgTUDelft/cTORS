@@ -1,12 +1,11 @@
 #include "BusinessRules.h"
 
-/*
-
-Rule that verifies that combine and split actions on shunting units
-are only performed on tracks where parking is allowed.
-
-*/
-
+/**
+ * Validates a SplitAction or CombineAction for the given state. 
+ * The SplitAction or CombineAction is invalid iff
+ * 1. The ShuntingUnit's current Track does not allow for parking.
+ * @return A pair describing 1) whether the action is valid, and 2) if not, why
+ */
 pair<bool, string> park_combine_split_rule::IsValid(const State* state, const Action* action) const {
 	if(!instanceof<SplitAction>(action) && !instanceof<CombineAction>(action)) return make_pair(true, "");
 	auto su = action->GetShuntingUnit();

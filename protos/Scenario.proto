@@ -55,6 +55,8 @@ message Train {
     // The index of the train unit when in- or outstanding, with lower indices 
     // at the A-side of the track
     double standingIndex = 10;
+
+    string minimumDuration = 11;
 }
 
 message NonServiceTraffic

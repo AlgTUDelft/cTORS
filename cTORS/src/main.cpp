@@ -4,12 +4,14 @@
 int main()
 {
 	LocationEngine engine("data/Demo");
-	engine.CalcShortestPaths();
-	State* state = engine.StartSession();
+	auto& scenario = engine.GetScenario("data/Demo/scenario.json");
+	State* state = engine.StartSession(scenario);
 	cout << "\nBeginning of session\n";
+	engine.Step(state);
 	while (true) {
 		try {
-			auto& actions = engine.Step(state);
+			state->PrintStateInfo();
+			auto& actions = engine.GetValidActions(state);
 			cout << "[T = "  + to_string(state->GetTime()) + "]\tChoosing from " << actions.size() << " actions.\n";
 			if (actions.size() == 0) break;
 			const Action* a;
@@ -28,7 +30,7 @@ int main()
 				}
 				a = *next(actions.begin(), i);
 			}
-			engine.ApplyAction(state, a);
+			engine.ApplyActionAndStep(state, a);
 		}
 		catch (ScenarioFailedException e) {
 			cout << "Scenario failed.\n";

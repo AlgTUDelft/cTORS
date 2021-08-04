@@ -33,8 +33,8 @@ class Location(Resource):
         offset_x = current_app.vis_config["offset_x"]
         offset_y = current_app.vis_config["offset_y"]
 
-        width = str(current_app.vis_config["width"]) + "px"
-        height = str(current_app.vis_config["height"]) + "px"
+        width = str(int(current_app.vis_config["width"] * track_scale))  + "px"
+        height = str(int(current_app.vis_config["height"] * track_scale))  + "px"
         svg_document = svgwrite.Drawing("location.svg", size=(width, height))
 
         # Draw the base

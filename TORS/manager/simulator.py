@@ -1,7 +1,6 @@
 from pyTORS import Engine, ScenarioFailedError
-#from tors.core.engine import Engine
-#from tors.core.logger.exceptions import ScenarioFailedError
 import importlib
+from manager.scenario_generator import ScenarioGeneratorFromFolder
 
 class Simulator:
     
@@ -11,40 +10,34 @@ class Simulator:
         self.state = None
         self.result = 1
         self.n_trains = 1
-        self.org_scenario = None
         self.scenario = None
         self.scenario_generator = None
     
     def start(self):
         self.assert_start_conditions()
         self.engine = Simulator.load_engine(self.config['data folder'])
-        self.org_scenario = self.engine.get_scenario()
         
     def reset(self):
         if not self.state is None:
-            self.print("S> End previous session")
             self.engine.end_session(self.state)
-        self.print("S> Delete scenario")
         del self.scenario
 
-        # TODO: Shunting units are stored in incoming and outgoin goals, which are deleted when the scenario is deleted,
-        # and also in the state, which is deleted when the state is deleted.
-
-        self.scenario = self.scenario_generator.generate_scenario()
+        self.scenario = self.scenario_generator.get_scenario()
+        if self.config.verbose >= 1:
+            self.scenario.print_scenario_info()
         self.state = self.engine.start_session(self.scenario)
+        self.engine.step(self.state)
         self.result = 0
+        if self.config.verbose >= 2:
+            self.state.print_state_info()
     
     def get_state(self):
-        try:
-            self.print("S [{}]> Get actions".format(self.state.time))
-            next_actions = self.engine.step(self.state)
-            #next_actions = [(a[0], a[1]) for a in next_actions]
-        except ScenarioFailedError:
-            next_actions = []
-            self.print("S [{}]> Scenario failed".format(self.state.time))
-        if len(next_actions) == 0:
+        if not self.is_active():
             self.result = self.calculate_reward()
-        return self.state, next_actions
+        return self.state
+
+    def is_active(self):
+        return self.engine.is_state_active(self.state)
     
     def calculate_reward(self):
         if len(self.state.incoming_trains) == 0 and len(self.state.outgoing_trains) == 0: return 1
@@ -53,7 +46,15 @@ class Simulator:
     
     def apply_action(self, action):
         self.print("S [{}]> Applying action {}".format(self.state.time, str(action)))
-        self.engine.apply_action(self.state, action)
+        try:
+            self.engine.apply_action_and_step(self.state, action)
+            if self.config.verbose >= 2:
+                self.state.print_state_info()
+            return True
+        except ScenarioFailedError:
+            self.print("S [{}]> Scenario failed".format(self.state.time))
+            return False
+
     def get_time(self):
         return self.state.time
     
@@ -62,14 +63,17 @@ class Simulator:
     
     def get_location(self):
         return self.engine.get_location()
+
+    def get_engine(self):
+        return self.engine
     
     def get_max_trains(self):
-        return self.engine.get_scenario().number_of_trains
+        return self.config["max_trains"]
     
     def set_n_trains(self, n):
         self.n_trains = n
         self.scenario_generator = self.get_generator(n)
-        self.scenario_generator.initialize(self.org_scenario, self.engine.get_location())
+        self.scenario_generator.initialize(self.engine, self.config['scenario'])
         
     def get_result(self):
         return self.result
@@ -94,7 +98,7 @@ class Simulator:
         del config['class']
         if generator_str in self.config:
             config.update(self.config[generator_str])
-        return _class(n_trains=n_trains, **config)
+        return ScenarioGeneratorFromFolder(_class, n_trains=n_trains, **config)
     
 def _has_matching_shunting_unit(o_su, sus):
         for s_su in sus:

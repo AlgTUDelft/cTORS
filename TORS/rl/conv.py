@@ -2,7 +2,8 @@ from itertools import chain, repeat, islice
 import numpy as np
 from pyTORS import TrackPartType, InvalidActionError, ScenarioFailedError, \
     Arrive, Exit, BeginMove, EndMove, Service, Split, Setback, Combine, Move, Wait, \
-    ArriveAction, ExitAction, BeginMoveAction, EndMoveAction, WaitAction, ServiceAction, SplitAction, SetbackAction, CombineAction, MoveAction
+    ArriveAction, ExitAction, BeginMoveAction, EndMoveAction, WaitAction, ServiceAction, SplitAction, SetbackAction, CombineAction, MoveAction, \
+    State, Track, Location, Engine, Action, ShuntingUnit, Incoming, Outgoing, Train
 from gym import spaces
 
 
@@ -10,20 +11,20 @@ from gym import spaces
 A class to convert the TORS state to a data tuple
 """
 class ITORSConvertor:
-    def __init__(self, engine, location, *args, **kwargs):
+    def __init__(self, engine: Engine, location: Location, *args, **kwargs):
         self.engine = engine
         self.location = location
     
     """
     Convert a TORS state object to a data object, e.g. a tuple or a custom data object
     """
-    def convert_state(self, state):
+    def convert_state(self, state: State):
         raise NotImplementedError("This method has not been implemented.")
 
     """
     Convert an action to a TORS Action object
     """
-    def convert_action(self, action):
+    def convert_action(self, action: Action):
         raise NotImplementedError("This method has not been implemented.")
     
     """
@@ -43,7 +44,7 @@ class ITORSConvertor:
 An example class implementing the ITORSConvertor
 """
 class TORSConverter(ITORSConvertor):
-    def __init__(self, location, *args, **kwargs):
+    def __init__(self, location: Location, *args, **kwargs):
         super(TORSConverter, self).__init__(location, *args, **kwargs)
         self.init_tracks()
         self.init_sizes()
@@ -67,11 +68,11 @@ class TORSConverter(ITORSConvertor):
         self.n_actions = 5 + 2*(self.n_trains-1) + len(self.tracks) # see convert_action for this count of actions
         self.n_total_actions = self.n_inc + self.n_out + self.n_trains * self.n_actions
 
-    def get_observation_space(self, state):
+    def get_observation_space(self, state: State):
         conv = self.convert_state(state)
         return spaces.Box(low=0, high=1, shape=(len(conv),), dtype=np.float16)
     
-    def get_action_space(self, state):
+    def get_action_space(self, state: State):
         return spaces.Discrete(self.n_total_actions)
 
     """
@@ -88,7 +89,7 @@ class TORSConverter(ITORSConvertor):
     Combine     (n-trains-1)
     Move        (n_tracks)
     """
-    def convert_action(self, state, action):
+    def convert_action(self, state: State, action: int):
         if action < self.n_inc:
             incoming = sorted(state.incoming_trains, key=lambda inc: inc.time)
             return Arrive(incoming[action])
@@ -126,7 +127,7 @@ class TORSConverter(ITORSConvertor):
         action_ix -= self.n_trains-1
         return Move(su, self.tracks[action_ix])
 
-    def convert_state(self, state):
+    def convert_state(self, state: State):
         return tuple(chain(
             self.convert_incomings(state),
             self.convert_outgoings(state),
@@ -136,30 +137,30 @@ class TORSConverter(ITORSConvertor):
             self.convert_valid_actions(state))
         )
     
-    def convert_incomings(self, state):
+    def convert_incomings(self, state: State):
         return pad(chain.from_iterable([self.convert_incoming(state, inc) for inc in state.incoming_trains]), self.n_inc * self.incoming_size)
         
-    def convert_outgoings(self, state):
+    def convert_outgoings(self, state: State):
         return pad(chain.from_iterable([self.convert_outgoing(state, out) for out in state.outgoing_trains]), self.n_out * self.outgoing_size)
     
-    def convert_incoming(self, state, inc):
+    def convert_incoming(self, state: State, inc: Incoming):
         return chain(
             self.convert_time(state, inc.time),
             self.convert_track_position(inc.parking_track),
             self.convert_trains(inc.shunting_unit.trains)
         )
 
-    def convert_outgoing(self, state, out):
+    def convert_outgoing(self, state: State, out: Outgoing):
         return chain(
             self.convert_time(state, out.time),
             self.convert_track_position(out.parking_track),
             self.convert_trains(out.shunting_unit.trains)
         )
     
-    def convert_shunting_units(self, state):
+    def convert_shunting_units(self, state: State):
     	return pad(chain.from_iterable([self.convert_su(state, su) for su in state.shunting_units]), self.n_trains * self.su_size)
     
-    def convert_su(self, state, su):
+    def convert_su(self, state: State, su: ShuntingUnit):
         return pad(chain(
             [
             1 if state.is_moving(su) else 0, 
@@ -175,7 +176,7 @@ class TORSConverter(ITORSConvertor):
     def convert_trains(self, trains):
         return pad(chain.from_iterable([self.convert_train(train) for train in trains]), self.n_trains * self.train_size)
 
-    def convert_train(self, train):
+    def convert_train(self, train: Train):
         if train.type.display_name == 'SLT4':
             return np.array([1,0,0])
         elif train.type.display_name == 'SLT6':
@@ -184,10 +185,10 @@ class TORSConverter(ITORSConvertor):
             return np.array([0,0,1])
         return np.array([0,0,0])
 
-    def convert_tracks(self, state):
+    def convert_tracks(self, state: State):
         return chain.from_iterable([self.convert_track(state, track) for track in self.tracks])
 
-    def convert_track(self, state, track):
+    def convert_track(self, state: State, track: Track):
         sus_list = state.shunting_units
         sus = state.get_occupations(track)
         if len(sus) > 1:
@@ -197,19 +198,19 @@ class TORSConverter(ITORSConvertor):
             [get_index(len(sus_list), sus_list.index(su)) for su in sus]),
             self.n_trains * self.n_trains)
 
-    def convert_track_position(self, track):
+    def convert_track_position(self, track: Track):
         return get_index(len(self.tracks), self.track_map[track])
 
-    def convert_direction(self, state, su):
+    def convert_direction(self, state: State, su: ShuntingUnit):
         pos = state.get_position(su)
         prev = state.get_previous(su)
         if pos.is_a_side(prev): return [1]
         return [0]
 
-    def convert_time(self, state, time):
+    def convert_time(self, state: State, time: int):
         return [(time - state.start_time) / (state.end_time - state.start_time)]
 
-    def convert_valid_actions(self, state):
+    def convert_valid_actions(self, state: State):
         if True: # if check for valid actions
             result = np.zeros(self.n_total_actions)
             try:
@@ -226,7 +227,7 @@ class TORSConverter(ITORSConvertor):
             result = np.ones(self.n_total_actions)
         return result
 
-    def convert_valid_action(self, state, action):
+    def convert_valid_action(self, state: State, action: Action):
         base = 0
         if isinstance(action, ArriveAction):
             return base + sorted(state.incoming_trains, key=lambda inc: inc.time).index(action.incoming)
@@ -258,7 +259,7 @@ class TORSConverter(ITORSConvertor):
         if isinstance(action, MoveAction):
             return base + self.track_map[action.destination_track]
     
-def get_index(n, i):
+def get_index(n: int, i: int):
         a = np.zeros(n)
         a[i] = 1
         return a

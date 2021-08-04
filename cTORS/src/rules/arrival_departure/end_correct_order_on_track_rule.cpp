@@ -1,12 +1,13 @@
 #include "BusinessRules.h"
 
-/*
 
-Rule that verifies that shunting units which stay in the shunting yard after 
-the scheduling period will be located in the right order on their track.
-
-*/
-
+/**
+ * Validates an ExitAction for the given state. 
+ * The ExitAction is invalid if
+ * 1. The end time of the scenario is reached, and
+ * 2. The outgoing train is blocked to leave from its side track
+ * @return A pair describing 1) whether the action is valid, and 2) if not, why
+ */
 pair<bool, string> end_correct_order_on_track_rule::IsValid(const State* state, const Action* action) const {
 	if(state->GetTime() < state->GetEndTime())
 		return make_pair(true, "");

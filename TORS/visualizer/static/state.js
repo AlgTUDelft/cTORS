@@ -165,8 +165,23 @@ function update_layout(data) {
                 fill: "none"
             });
 
+            if(train.moving || train.active) {
+                var train_moving_line = layout.path(d = points);
+                var amount = -20;
+                if(train.moving)
+                    amount = 20;
+                var moving_color = '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
+
+                train_moving_line.attr({
+                    id: "moving-train-" + train.unique_id,
+                    strokeWidth: 10,
+                    stroke: moving_color,
+                    fill: "none"
+                });
+            }
+
             // display direction
-            if (train.direction && !train.in_neutral && !train.moving) {
+            if (train.direction && !train.in_neutral) {
 
                 var point1 = train_line.getPointAtLength(10);
                 var point2 = train_line.getPointAtLength(train_line.getTotalLength() - 10);

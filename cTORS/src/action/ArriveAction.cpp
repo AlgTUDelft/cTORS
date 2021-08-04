@@ -27,6 +27,7 @@ const string ArriveAction::toString() const {
 const Action* ArriveActionGenerator::Generate(const State* state, const SimpleAction& action) const {
 	auto arrive = static_cast<const Arrive*>(&action);
 	auto inc = state->GetIncomingByID(arrive->GetIncomingID());
+	if(inc == nullptr) throw InvalidActionException("There is no incoming train with ID " + to_string(arrive->GetIncomingID()));
 	auto su = inc->GetShuntingUnit();
 	return new ArriveAction(su, 0, inc);
 }
